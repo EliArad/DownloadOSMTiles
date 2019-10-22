@@ -25,7 +25,7 @@ namespace DownloadOSMTiles
             {
                 TileDB db = new TileDB(mapfile);
                 if (db.Load(out tilesBlock) == "ok")
-                {                     
+                {
                     return true;
                 }
                 this.BackColor = Color.Black;
@@ -38,13 +38,13 @@ namespace DownloadOSMTiles
             }
 
         }
-        public void ShowLatLon(float lat , float lon, int zoom)
+        public void ShowLatLon(float lat, float lon, int zoom)
         {
             var q = from ll in tilesBlock
-                    where ll.lat >= lat && ll.lon >= lon && ll.zoom == zoom                   
+                    where ll.lat >= lat && ll.lon >= lon && ll.zoom == zoom
                     select ll;
         }
-        
+
         public void ShowLatLon(string name, int zoom)
         {
             try
@@ -72,7 +72,7 @@ namespace DownloadOSMTiles
                     {
                         TileBlock r = q.SingleOrDefault();
 
-                        PictureBox b;
+                        MapPictureBox b;
                         if (r.bitmap != null)
                         {
                             b = AddTile(x, y, i, r.bitmap);
@@ -82,6 +82,7 @@ namespace DownloadOSMTiles
                             b = AddTile(x, y, i, r.fileName);
                         }
                         b.SizeMode = PictureBoxSizeMode.Normal;
+                        b.tileBlock = r;
                         this.Controls.Add(b);
                         startx++;
                         x++;
@@ -102,26 +103,43 @@ namespace DownloadOSMTiles
             }
         }
 
-        PictureBox AddTile(int x , int y, int i, Bitmap b)
+        MapPictureBox AddTile(int x, int y, int i, Bitmap b)
         {
-            PictureBox pb  = new PictureBox();
+            MapPictureBox pb = new MapPictureBox();
             pb.Name = "pictureBox" + i;
-            pb.Size = new System.Drawing.Size(b.Width,b.Height);
+            pb.Size = new System.Drawing.Size(b.Width, b.Height);
             pb.TabIndex = i;
             pb.TabStop = false;
+            pb.MouseMove += Pb_MouseMove;
             pb.Location = new System.Drawing.Point(x * pb.Size.Width, y * pb.Size.Height);
             pb.Image = b;
             return pb;
         }
-        PictureBox AddTile(int x, int y, int i, string fileName)
+
+        public delegate void MapControlCallback(TileBlock t);
+
+        MapControlCallback pMapControlCallback;
+        public void SetCallback(MapControlCallback p)
+        {
+            pMapControlCallback = p;
+        }
+        private void Pb_MouseMove(object sender, MouseEventArgs e)
+        {
+            MapPictureBox p = sender as MapPictureBox;
+            pMapControlCallback(p.tileBlock);
+                
+        }
+
+        MapPictureBox AddTile(int x, int y, int i, string fileName)
         {
             int width = 256;
             int height = 256;
-            PictureBox pb = new PictureBox();
+            MapPictureBox pb = new MapPictureBox();
             pb.Name = "pictureBox" + i;
             pb.Size = new System.Drawing.Size(width, height);
             pb.TabIndex = i;
             pb.TabStop = false;
+            pb.MouseMove += Pb_MouseMove;
             pb.Location = new System.Drawing.Point(x * pb.Size.Width, y * pb.Size.Height);
             pb.ImageLocation = fileName;
             return pb;

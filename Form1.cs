@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Net.Http;
 using System.Windows.Forms;
+using static DownloadOSMTiles.MapControl;
 
 namespace DownloadOSMTiles
 {
@@ -16,10 +17,17 @@ namespace DownloadOSMTiles
             InitializeComponent();
             Directory.CreateDirectory(m_baseDir);
 
-            
+            MapControlCallback p = new MapControlCallback(MapControlCallbackMsg);
+            mapControl1.SetCallback(p);
         }
 
-       
+        void MapControlCallbackMsg(TileBlock tb)
+        {
+            lblLat.Text = tb.lat.ToString();
+            lblLon.Text = tb.lon.ToString();
+            lblTileX.Text = tb.x.ToString();
+            lblTileY.Text = tb.y.ToString();
+        }
         private void button1_Click(object sender, EventArgs e)
         { 
 
