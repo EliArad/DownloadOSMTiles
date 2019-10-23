@@ -288,5 +288,14 @@ namespace DownloadOSMTiles
                 MessageBox.Show(outMessage);
             }            
         }
+
+        private void txtCreateName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                cmbZoom.Text = "9";
+                mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
+            }                 
+        }
     }
 }

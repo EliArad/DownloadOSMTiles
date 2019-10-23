@@ -192,6 +192,7 @@
             this.txtCreateName.Size = new System.Drawing.Size(100, 20);
             this.txtCreateName.TabIndex = 9;
             this.txtCreateName.Text = "new york";
+            this.txtCreateName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCreateName_KeyDown);
             // 
             // txtCreateLat
             // 
