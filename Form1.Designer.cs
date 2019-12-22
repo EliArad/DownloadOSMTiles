@@ -52,6 +52,19 @@
             this.lblTileX = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.btnCreateFromRegion = new System.Windows.Forms.Button();
+            this.txtStartX = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtStartY = new System.Windows.Forms.TextBox();
+            this.txtDownloadCount = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.lblPixelY = new System.Windows.Forms.Label();
+            this.lblPixelX = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.btnGo = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -122,9 +135,11 @@
             this.txtCreateLon.Name = "txtCreateLon";
             this.txtCreateLon.Size = new System.Drawing.Size(100, 20);
             this.txtCreateLon.TabIndex = 7;
+            this.txtCreateLon.Text = "34.4";
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnGo);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtCreateSize);
             this.groupBox1.Controls.Add(this.label4);
@@ -136,7 +151,7 @@
             this.groupBox1.Controls.Add(this.txtCreateLon);
             this.groupBox1.Location = new System.Drawing.Point(12, 55);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(218, 163);
+            this.groupBox1.Size = new System.Drawing.Size(242, 163);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -156,7 +171,7 @@
             this.txtCreateSize.Name = "txtCreateSize";
             this.txtCreateSize.Size = new System.Drawing.Size(100, 20);
             this.txtCreateSize.TabIndex = 13;
-            this.txtCreateSize.Text = "10";
+            this.txtCreateSize.Text = "9";
             // 
             // label4
             // 
@@ -191,7 +206,7 @@
             this.txtCreateName.Name = "txtCreateName";
             this.txtCreateName.Size = new System.Drawing.Size(100, 20);
             this.txtCreateName.TabIndex = 9;
-            this.txtCreateName.Text = "new york";
+            this.txtCreateName.Text = "israel";
             this.txtCreateName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCreateName_KeyDown);
             // 
             // txtCreateLat
@@ -200,11 +215,12 @@
             this.txtCreateLat.Name = "txtCreateLat";
             this.txtCreateLat.Size = new System.Drawing.Size(100, 20);
             this.txtCreateLat.TabIndex = 8;
+            this.txtCreateLat.Text = "33.4";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(31, 366);
+            this.label6.Location = new System.Drawing.Point(33, 319);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(18, 13);
             this.label6.TabIndex = 9;
@@ -213,7 +229,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(31, 396);
+            this.label7.Location = new System.Drawing.Point(33, 349);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(25, 13);
             this.label7.TabIndex = 10;
@@ -222,7 +238,7 @@
             // lblLon
             // 
             this.lblLon.AutoSize = true;
-            this.lblLon.Location = new System.Drawing.Point(69, 396);
+            this.lblLon.Location = new System.Drawing.Point(71, 349);
             this.lblLon.Name = "lblLon";
             this.lblLon.Size = new System.Drawing.Size(13, 13);
             this.lblLon.TabIndex = 12;
@@ -231,7 +247,7 @@
             // lblLat
             // 
             this.lblLat.AutoSize = true;
-            this.lblLat.Location = new System.Drawing.Point(69, 366);
+            this.lblLat.Location = new System.Drawing.Point(71, 319);
             this.lblLat.Name = "lblLat";
             this.lblLat.Size = new System.Drawing.Size(13, 13);
             this.lblLat.TabIndex = 11;
@@ -251,7 +267,7 @@
             // lblTileY
             // 
             this.lblTileY.AutoSize = true;
-            this.lblTileY.Location = new System.Drawing.Point(69, 457);
+            this.lblTileY.Location = new System.Drawing.Point(71, 410);
             this.lblTileY.Name = "lblTileY";
             this.lblTileY.Size = new System.Drawing.Size(13, 13);
             this.lblTileY.TabIndex = 16;
@@ -260,7 +276,7 @@
             // lblTileX
             // 
             this.lblTileX.AutoSize = true;
-            this.lblTileX.Location = new System.Drawing.Point(69, 427);
+            this.lblTileX.Location = new System.Drawing.Point(71, 380);
             this.lblTileX.Name = "lblTileX";
             this.lblTileX.Size = new System.Drawing.Size(13, 13);
             this.lblTileX.TabIndex = 15;
@@ -269,7 +285,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(31, 457);
+            this.label10.Location = new System.Drawing.Point(33, 410);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(14, 13);
             this.label10.TabIndex = 14;
@@ -278,17 +294,146 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(31, 427);
+            this.label11.Location = new System.Drawing.Point(33, 380);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(14, 13);
             this.label11.TabIndex = 13;
             this.label11.Text = "X";
+            // 
+            // btnCreateFromRegion
+            // 
+            this.btnCreateFromRegion.Location = new System.Drawing.Point(12, 568);
+            this.btnCreateFromRegion.Name = "btnCreateFromRegion";
+            this.btnCreateFromRegion.Size = new System.Drawing.Size(189, 23);
+            this.btnCreateFromRegion.TabIndex = 15;
+            this.btnCreateFromRegion.Text = "Create For Region";
+            this.btnCreateFromRegion.UseVisualStyleBackColor = true;
+            this.btnCreateFromRegion.Click += new System.EventHandler(this.btnCreateFromRegion_Click);
+            // 
+            // txtStartX
+            // 
+            this.txtStartX.Location = new System.Drawing.Point(12, 542);
+            this.txtStartX.Name = "txtStartX";
+            this.txtStartX.Size = new System.Drawing.Size(44, 20);
+            this.txtStartX.TabIndex = 15;
+            this.txtStartX.Text = "9472";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(12, 526);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(39, 13);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "Start X";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(62, 526);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(39, 13);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "Start Y";
+            // 
+            // txtStartY
+            // 
+            this.txtStartY.Location = new System.Drawing.Point(62, 542);
+            this.txtStartY.Name = "txtStartY";
+            this.txtStartY.Size = new System.Drawing.Size(44, 20);
+            this.txtStartY.TabIndex = 18;
+            this.txtStartY.Text = "6400";
+            // 
+            // txtDownloadCount
+            // 
+            this.txtDownloadCount.Location = new System.Drawing.Point(112, 542);
+            this.txtDownloadCount.Name = "txtDownloadCount";
+            this.txtDownloadCount.Size = new System.Drawing.Size(44, 20);
+            this.txtDownloadCount.TabIndex = 20;
+            this.txtDownloadCount.Text = "3";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(109, 526);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(35, 13);
+            this.label12.TabIndex = 21;
+            this.label12.Text = "Count";
+            // 
+            // lblPixelY
+            // 
+            this.lblPixelY.AutoSize = true;
+            this.lblPixelY.Location = new System.Drawing.Point(71, 469);
+            this.lblPixelY.Name = "lblPixelY";
+            this.lblPixelY.Size = new System.Drawing.Size(13, 13);
+            this.lblPixelY.TabIndex = 25;
+            this.lblPixelY.Text = "0";
+            // 
+            // lblPixelX
+            // 
+            this.lblPixelX.AutoSize = true;
+            this.lblPixelX.Location = new System.Drawing.Point(71, 439);
+            this.lblPixelX.Name = "lblPixelX";
+            this.lblPixelX.Size = new System.Drawing.Size(13, 13);
+            this.lblPixelX.TabIndex = 24;
+            this.lblPixelX.Text = "0";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(33, 469);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(35, 13);
+            this.label15.TabIndex = 23;
+            this.label15.Text = "pixelY";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(33, 439);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(35, 13);
+            this.label16.TabIndex = 22;
+            this.label16.Text = "pixelX";
+            // 
+            // btnGo
+            // 
+            this.btnGo.Location = new System.Drawing.Point(177, 45);
+            this.btnGo.Name = "btnGo";
+            this.btnGo.Size = new System.Drawing.Size(59, 44);
+            this.btnGo.TabIndex = 15;
+            this.btnGo.Text = "GO";
+            this.btnGo.UseVisualStyleBackColor = true;
+            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(207, 568);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(129, 23);
+            this.button5.TabIndex = 26;
+            this.button5.Text = "Create Single Zoom";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1266, 621);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.lblPixelY);
+            this.Controls.Add(this.lblPixelX);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.txtDownloadCount);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.txtStartY);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.txtStartX);
+            this.Controls.Add(this.btnCreateFromRegion);
             this.Controls.Add(this.lblTileY);
             this.Controls.Add(this.lblTileX);
             this.Controls.Add(this.label10);
@@ -342,6 +487,19 @@
         private System.Windows.Forms.Label lblTileX;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button btnCreateFromRegion;
+        private System.Windows.Forms.TextBox txtStartX;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtStartY;
+        private System.Windows.Forms.TextBox txtDownloadCount;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label lblPixelY;
+        private System.Windows.Forms.Label lblPixelX;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button btnGo;
+        private System.Windows.Forms.Button button5;
     }
 }
 

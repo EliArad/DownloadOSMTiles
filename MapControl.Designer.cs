@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.Name = "MapControl";
-            this.Size = new System.Drawing.Size(885, 443);
+            this.Size = new System.Drawing.Size(1105, 612);
             this.ResumeLayout(false);
 
         }

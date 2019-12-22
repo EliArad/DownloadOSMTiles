@@ -18,6 +18,7 @@ namespace DownloadOSMTiles
         public int zoom;
         public string name;
     }
+
     public struct TileBlock
     {
         public int x;

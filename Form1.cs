@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Windows.Forms;
 using static DownloadOSMTiles.MapControl;
 
@@ -18,15 +19,53 @@ namespace DownloadOSMTiles
             Directory.CreateDirectory(m_baseDir);
 
             MapControlCallback p = new MapControlCallback(MapControlCallbackMsg);
-            mapControl1.SetCallback(p);
+            MapControlZoomCallback p1 = new MapControlZoomCallback(MapControlZoomCallbackMsg);
+            mapControl1.SetCallback(p,p1);
         }
 
-        void MapControlCallbackMsg(TileBlock tb)
+        void MapControlZoomCallbackMsg(TileBlock tb , bool zoomIn)
+        {
+            if (zoomIn == true)
+            {
+                if (mapControl1.ShowLatLon(tb.name, tb.zoom + 1, tb.lat, tb.lon, out string outMessage) == false)
+                {
+                    MessageBox.Show("Missing tiles: " + outMessage);
+                }
+            }
+            else
+            {
+                if (mapControl1.ShowLatLon(tb.name, tb.zoom - 1, tb.lat, tb.lon, out string outMessage) == false)
+                {
+                    MessageBox.Show("Missing tiles: " + outMessage);
+                }
+            }
+        }
+        void MapControlCallbackMsg(TileBlock tb, int code, MOUSE_DIRECTION direction, string msg)
         {
             lblLat.Text = tb.lat.ToString();
             lblLon.Text = tb.lon.ToString();
             lblTileX.Text = tb.x.ToString();
             lblTileY.Text = tb.y.ToString();
+            lblPixelX.Text = tb.pixelx.ToString();
+            lblPixelY.Text = tb.pixely.ToString();
+
+            if (direction ==  MOUSE_DIRECTION.LEFT)
+            {
+                mapControl1.MoveLeft();
+            }
+            else if (direction == MOUSE_DIRECTION.RIGHT)
+            {
+                mapControl1.MoveRight();
+            }
+            else if (direction == MOUSE_DIRECTION.UP)
+            {
+                mapControl1.MoveUp();
+            }
+            else if (direction == MOUSE_DIRECTION.DOWN)
+            {
+                mapControl1.MoveDown();
+            }
+
         }
         private void button1_Click(object sender, EventArgs e)
         { 
@@ -53,7 +92,7 @@ namespace DownloadOSMTiles
             };
 
 
-            DownloadTiles(t3, (status, msg, count) =>
+            DownloadTiles(t3, (status, msg, countMissing, countDownload) =>
             {
                 MessageBox.Show("Finished");
             });
@@ -83,7 +122,7 @@ namespace DownloadOSMTiles
         {
             return Math.Min(Math.Max(n, minValue), maxValue);
         }
-
+        
         void LatLongToPixelXYOSM(float latitude, float longitude, int zoomLevel, 
                                  out int pixelX, 
                                  out int pixelY,
@@ -104,14 +143,14 @@ namespace DownloadOSMTiles
 
             tilex = (int)(Math.Truncate(X));
             tiley = (int)(Math.Truncate(Y));
-            pixelX = (int)ClipByRange((tilex * 256) + ((X - tilex) * 256), mapSize - 1);
-            pixelY = (int)ClipByRange((tiley * 256) + ((Y - tiley) * 256), mapSize - 1);
+            pixelX = tilex * 256;
+            pixelY = tiley * 256;
         }
 
 
         private readonly string[] _serverEndpoints = { "a", "b", "c" };
         
-        public async void DownloadTiles(Tile tile, Action<bool, string, int> cb)
+        public async void DownloadTiles(Tile tile, Action<bool, string, int,int> cb)
         {
             Directory.CreateDirectory(m_baseDir + tile.name);
             HttpClient client = new HttpClient();
@@ -121,6 +160,7 @@ namespace DownloadOSMTiles
             int pixelx = tile.pixelx;
             int pixely = tile.pixely;
             int countMissing = 0;
+            int countDownload = 0;
 
             for (int x = tile.x; x < (tile.x + tile.x_size); x++)
             {               
@@ -128,9 +168,19 @@ namespace DownloadOSMTiles
                 {
                     try
                     {
-                        var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{x}/{y}.png";
-                        var data = await client.GetByteArrayAsync(url);
-                        File.WriteAllBytes(m_baseDir + tile.name + "\\_" + tile.zoom + "_" + x + "_" + y + "_" + pixelx + "_" + pixely + "_" + ".png", data);
+                        string fileName = m_baseDir + tile.name + "\\_" + tile.zoom + "_" + x + "_" + y + "_" + pixelx + "_" + pixely + "_" + ".png";
+                        if (File.Exists(fileName) == false)
+                        {
+                            var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{x}/{y}.png";
+                            var data = await client.GetByteArrayAsync(url);
+                            File.WriteAllBytes(fileName, data);
+                            Thread.Sleep(400);
+                            countDownload++;
+                        }
+                        else
+                        {
+                            countDownload++;
+                        }
                     }
                     catch (Exception err)
                     {
@@ -140,10 +190,10 @@ namespace DownloadOSMTiles
                 }
                 pixelx += 256;
             }
-            cb(true, "finished", countMissing);
+            cb(true, "finished", countMissing, countDownload);
         }
 
-        public async void DownloadTiles(List<Tile> tiles, Action<bool, string, int> cb)
+        public async void DownloadTiles(List<Tile> tiles, Action<bool, string, int,int> cb)
         {
             Directory.CreateDirectory(m_baseDir + tiles[0].name);
             HttpClient client = new HttpClient();
@@ -153,6 +203,7 @@ namespace DownloadOSMTiles
             int pixelx = tiles[0].pixelx;
             int pixely = tiles[0].pixely;
             int countMissing = 0;
+            int countDownload = 0;
             foreach (Tile tile in tiles)
             {
 
@@ -163,9 +214,19 @@ namespace DownloadOSMTiles
                     {
                         try
                         {
-                            var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{x}/{y}.png";
-                            var data = await client.GetByteArrayAsync(url);
-                            File.WriteAllBytes(m_baseDir + tile.name + "\\_" + tile.zoom + "_" + x + "_" + y + "_" + pixelx + "_" + pixely + "_" + ".png", data);
+                            string fileName = m_baseDir + tile.name + "\\_" + tile.zoom + "_" + x + "_" + y + "_" + pixelx + "_" + pixely + "_" + ".png";
+                            if (File.Exists(fileName) == false)
+                            {
+                                var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{x}/{y}.png";
+                                var data = await client.GetByteArrayAsync(url);
+                                File.WriteAllBytes(fileName, data);
+                                Thread.Sleep(400);
+                                countDownload++;
+                            }
+                            else
+                            {
+                                countDownload++;
+                            }
                         }
                         catch (Exception err)
                         {
@@ -176,7 +237,48 @@ namespace DownloadOSMTiles
                     pixelx += 256;
                 }
             }
-            cb(true, "finished", countMissing);
+            cb(true, "finished", countMissing, countDownload);
+        }
+
+
+        public async void DownloadTilesFromList(List<Tile> tiles, Action<bool, string, int, int> cb)
+        {
+            Directory.CreateDirectory(m_baseDir + tiles[0].name);
+            HttpClient client = new HttpClient();
+
+
+            var random = new Random();
+             
+            int countMissing = 0;
+            int countDownload = 0;
+            foreach (Tile tile in tiles)
+            { 
+                try
+                {
+                    string fileName = m_baseDir + tile.name + "\\_" + tile.zoom + "_" + tile.x + "_" + tile.y + "_" + tile.pixelx + "_" + tile.pixely + "_" + ".png";
+                    if (File.Exists(fileName) == false)
+                    {
+                        var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{tile.x}/{tile.y}.png";
+                        var data = await client.GetByteArrayAsync(url);
+                        File.WriteAllBytes(fileName, data);
+                        Thread.Sleep(2000);
+                        countDownload++;
+                        Console.WriteLine("{0}:{1}", countDownload, tiles.Count);
+                    }
+                    else
+                    {
+                        countDownload++;
+                        Console.WriteLine("{0}:{1}", countDownload, tiles.Count);
+                    }
+                }
+                catch (Exception err)
+                {
+                    countMissing++;
+                }
+                   
+            }
+            if (cb != null)
+                cb(true, "finished", countMissing, countDownload);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -216,7 +318,7 @@ namespace DownloadOSMTiles
                 return;                    
             }
 
-            DownloadTiles(tiles, (status, msg, count) =>
+            DownloadTiles(tiles, (status, msg, countMissing, countDownload) =>
             {
                 MessageBox.Show("Finished");
             });            
@@ -250,6 +352,16 @@ namespace DownloadOSMTiles
             db.Save(tilesBlock);
             MessageBox.Show("Created");
 
+            if (mapControl1.LoadMapData("tiles_lat_lon_db.json", out string outMessage) == true)
+            {
+                //mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
+                m_initdone = true;
+            }
+            else
+            {
+                MessageBox.Show(outMessage);
+            }
+
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -268,7 +380,7 @@ namespace DownloadOSMTiles
         {
             if (m_initdone == false)
                 return;
-            mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
+            //mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -281,7 +393,7 @@ namespace DownloadOSMTiles
 
             if (mapControl1.LoadMapData("tiles_lat_lon_db.json", out string outMessage) == true)
             {
-                mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
+                //mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
                 m_initdone = true;
             } else
             {
@@ -296,6 +408,142 @@ namespace DownloadOSMTiles
                 cmbZoom.Text = "9";
                 mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
             }                 
+        }
+
+        private void btnCreateFromRegion_Click(object sender, EventArgs e)
+        {
+            int startTilex = int.Parse(txtStartX.Text);
+            int startTiley = int.Parse(txtStartY.Text);
+             
+            int zoom = int.Parse(cmbZoom.Text);
+            List<Tile> tiles = new List<Tile>();
+            int orig_size = int.Parse(txtDownloadCount.Text);
+            int size = orig_size;
+            int sizeNext = 2;
+
+            // IN ZOOM , the X and Y are plus 256 and the pixel is multiplx 256
+
+            for (int z = zoom; z < 18; z++)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        Tile t3 = new Tile
+                        {
+                            x_size = 1,
+                            y_size = 1,                          
+                            name = txtCreateName.Text,
+                            zoom = z
+                        };
+                        t3.x = startTilex + j;
+                        t3.y = startTiley + i;
+                        t3.pixelx = t3.x * 256;
+                        t3.pixely = t3.y * 256;
+                        tiles.Add(t3);
+                    }
+                }
+                startTilex = startTilex * 2;
+                startTiley = startTiley * 2;
+                size = orig_size * sizeNext;
+                sizeNext += 1;
+                
+            }
+
+            DownloadTilesFromList(tiles, (status, msg, countMissing, countDownload) =>
+            {
+                MessageBox.Show("Finished download: " + countDownload);
+            });
+        }
+
+        private void btnGo_Click(object sender, EventArgs e)
+        {
+            if (mapControl1.ShowLatLon(txtCreateName.Text, 
+                                       int.Parse(cmbZoom.Text),
+                                       double.Parse(txtCreateLat.Text), 
+                                       double.Parse(txtCreateLon.Text),
+                                       out string outMessage) == false)
+            {
+                MessageBox.Show("Tile not found: " + outMessage);
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //DownloadFromPixelXAndPixelY();
+            DownloadFromXY();
+        }
+        void DownloadFromPixelXAndPixelY()
+        {
+            int startPixelTilex = int.Parse(txtStartX.Text);
+            int startPixelTiley = int.Parse(txtStartY.Text);
+            int zoom = int.Parse(txtDownloadCount.Text);
+            List<Tile> tiles = new List<Tile>();
+            int orig_size = int.Parse(txtDownloadCount.Text);
+            int size = 15;
+            // IN ZOOM , the X and Y are plus 256 and the pixel is multiplx 256
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    Tile t3 = new Tile
+                    {
+                        x_size = 1,
+                        y_size = 1,
+                        pixelx = startPixelTilex + j * 256,
+                        pixely = startPixelTiley + i * 256,
+                        name = txtCreateName.Text,
+                        zoom = zoom
+                    };
+                    t3.x = t3.pixelx / 256;
+                    t3.y = t3.pixely / 256;
+                    tiles.Add(t3);
+                }
+            }
+
+
+            DownloadTilesFromList(tiles, (status, msg, countMissing, countDownload) =>
+            {
+                MessageBox.Show("Finished download: " + countDownload);
+            });
+        }
+
+        void DownloadFromXY()
+        {
+            int startTilex = int.Parse(txtStartX.Text);
+            int startTiley = int.Parse(txtStartY.Text);
+            int zoom = int.Parse(txtDownloadCount.Text);
+            List<Tile> tiles = new List<Tile>();
+            int orig_size = int.Parse(txtDownloadCount.Text);
+            int size = 15;
+            // IN ZOOM , the X and Y are plus 256 and the pixel is multiplx 256
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    Tile t3 = new Tile
+                    {
+                        x_size = 1,
+                        y_size = 1,                       
+                        name = txtCreateName.Text,
+                        zoom = zoom
+                    };
+                    t3.x = startTilex + j;
+                    t3.y = startTiley + i;
+                    t3.pixelx = t3.x * 256;
+                    t3.pixely = t3.y * 256;
+                    tiles.Add(t3);
+                }
+
+            }
+
+
+            DownloadTilesFromList(tiles, (status, msg, countMissing, countDownload) =>
+            {
+                MessageBox.Show("Finished download: " + countDownload);
+            });
         }
     }
 }
