@@ -421,6 +421,7 @@ namespace DownloadOSMTiles
             }
         }
         POINT m_lastDrawLinePoint;
+        
         public void DrawLine(POINT pt)
         {
             IntPtr hdc = GetWindowDC(this.Handle);

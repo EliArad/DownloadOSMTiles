@@ -340,6 +340,10 @@ namespace DownloadOSMTiles
                     m_stopDownload = false;
                     return;
                 }
+                if (Directory.Exists(m_baseDir + tile.name + "\\" + tile.zoom) == false)
+                {
+                    Directory.CreateDirectory(m_baseDir + tile.name + "\\" + tile.zoom);
+                }
 
                 try
                 {
@@ -348,7 +352,7 @@ namespace DownloadOSMTiles
                     {
                         var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{tile.x}/{tile.y}.png";
                         var data = await client.GetByteArrayAsync(url);
-                        File.WriteAllBytes(fileName, data);
+                        File.WriteAllBytes(m_baseDir + tile.name + "\\" + tile.zoom + "\\" + Path.GetFileName(fileName), data);
                         Thread.Sleep(2000);
                         countDownload++;
                         string s = string.Format("{0}:{1} [ {2},{3},{4} ]", countDownload, tiles.Count,tile.x,tile.y, tile.zoom);
@@ -426,8 +430,9 @@ namespace DownloadOSMTiles
 
             foreach (string file in Directory.EnumerateFiles(m_baseDir, "*.png", SearchOption.AllDirectories))
             {
-                string[] fileparts = file.Split('_');
-                var dirName = new DirectoryInfo(fileparts[0]).Name;
+                string[] fileparts = file.Split('_');                
+                string [] s = fileparts[0].Split(Path.DirectorySeparatorChar);
+                var dirName = s[2];
                 TileBlock t = new TileBlock();
                 t.x = int.Parse(fileparts[2]);
                 t.y = int.Parse(fileparts[3]);
@@ -659,6 +664,11 @@ namespace DownloadOSMTiles
         private void button7_Click(object sender, EventArgs e)
         {
            mapControl1.RedrawWindow();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MouseHook.Stop();
         }
     }
 }
