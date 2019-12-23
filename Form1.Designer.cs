@@ -36,6 +36,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtCreateLon = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnGo = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.txtCreateSize = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -47,7 +48,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.lblLon = new System.Windows.Forms.Label();
             this.lblLat = new System.Windows.Forms.Label();
-            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.lblTileY = new System.Windows.Forms.Label();
             this.lblTileX = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -63,8 +63,11 @@
             this.lblPixelX = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.btnGo = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.label13 = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -155,6 +158,16 @@
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
+            // 
+            // btnGo
+            // 
+            this.btnGo.Location = new System.Drawing.Point(177, 45);
+            this.btnGo.Name = "btnGo";
+            this.btnGo.Size = new System.Drawing.Size(59, 44);
+            this.btnGo.TabIndex = 15;
+            this.btnGo.Text = "GO";
+            this.btnGo.UseVisualStyleBackColor = true;
+            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
             // 
             // label5
             // 
@@ -253,17 +266,6 @@
             this.lblLat.TabIndex = 11;
             this.lblLat.Text = "0";
             // 
-            // mapControl1
-            // 
-            this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mapControl1.BackColor = System.Drawing.Color.LightSkyBlue;
-            this.mapControl1.Location = new System.Drawing.Point(369, 3);
-            this.mapControl1.Name = "mapControl1";
-            this.mapControl1.Size = new System.Drawing.Size(885, 588);
-            this.mapControl1.TabIndex = 4;
-            // 
             // lblTileY
             // 
             this.lblTileY.AutoSize = true;
@@ -316,7 +318,7 @@
             this.txtStartX.Name = "txtStartX";
             this.txtStartX.Size = new System.Drawing.Size(44, 20);
             this.txtStartX.TabIndex = 15;
-            this.txtStartX.Text = "9472";
+            this.txtStartX.Text = "304";
             // 
             // label8
             // 
@@ -342,7 +344,7 @@
             this.txtStartY.Name = "txtStartY";
             this.txtStartY.Size = new System.Drawing.Size(44, 20);
             this.txtStartY.TabIndex = 18;
-            this.txtStartY.Text = "6400";
+            this.txtStartY.Text = "205";
             // 
             // txtDownloadCount
             // 
@@ -350,7 +352,7 @@
             this.txtDownloadCount.Name = "txtDownloadCount";
             this.txtDownloadCount.Size = new System.Drawing.Size(44, 20);
             this.txtDownloadCount.TabIndex = 20;
-            this.txtDownloadCount.Text = "3";
+            this.txtDownloadCount.Text = "10";
             // 
             // label12
             // 
@@ -397,16 +399,6 @@
             this.label16.TabIndex = 22;
             this.label16.Text = "pixelX";
             // 
-            // btnGo
-            // 
-            this.btnGo.Location = new System.Drawing.Point(177, 45);
-            this.btnGo.Name = "btnGo";
-            this.btnGo.Size = new System.Drawing.Size(59, 44);
-            this.btnGo.TabIndex = 15;
-            this.btnGo.Text = "GO";
-            this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
-            // 
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(207, 568);
@@ -417,11 +409,55 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(15, 600);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(19, 13);
+            this.label13.TabIndex = 27;
+            this.label13.Text = "....";
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(207, 410);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(108, 28);
+            this.button6.TabIndex = 16;
+            this.button6.Text = "Stop Download";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button7.Location = new System.Drawing.Point(717, 594);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 28;
+            this.button7.Text = "Clear";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // mapControl1
+            // 
+            this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mapControl1.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.mapControl1.Location = new System.Drawing.Point(369, 3);
+            this.mapControl1.Name = "mapControl1";
+            this.mapControl1.Size = new System.Drawing.Size(885, 588);
+            this.mapControl1.TabIndex = 4;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1266, 621);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.label13);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.lblPixelY);
             this.Controls.Add(this.lblPixelX);
@@ -500,6 +536,9 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button btnGo;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
     }
 }
 

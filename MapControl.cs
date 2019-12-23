@@ -8,17 +8,34 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using static DownloadOSMTiles.MouseHook;
+using System.Runtime.InteropServices;
 
 namespace DownloadOSMTiles
 {
     public partial class MapControl : UserControl
     {
-        public delegate void MapControlCallback(TileBlock t, int code ,
-                                                MOUSE_DIRECTION direction, string msg);
 
-        public delegate void MapControlZoomCallback(TileBlock t, bool zoomIn);
+        const int RDW_INVALIDATE = 0x0001;
+        const int RDW_ALLCHILDREN = 0x0080;
+        const int RDW_UPDATENOW = 0x0100;
+        [DllImport("User32.dll")]
+        static extern bool RedrawWindow(IntPtr hwnd, IntPtr rcUpdate, IntPtr regionUpdate, int flags);
 
-        bool m_mouseDown = false;
+
+        [DllImport("user32")]
+        private static extern IntPtr GetWindowDC(IntPtr hwnd);
+
+        // you also need ReleaseDC
+        [DllImport("user32")]
+        private static extern IntPtr ReleaseDC(IntPtr hwnd, IntPtr hdc);
+
+        int MAX_TILES = 7;
+        public delegate void MapControlCallback(TileBlock t, int code, int mouseX, int mouseY);
+
+        public delegate void MapMsgCallack(int code, string msg);
+        public delegate void MapControlZoomCallback(TileBlock t, int mapX , int mapY, bool zoomIn);
+
         List<TileBlock> tilesBlock = new List<TileBlock>();
         List<MapPictureBox> m_allTiles = new List<MapPictureBox>();
         public MapControl()
@@ -98,6 +115,95 @@ namespace DownloadOSMTiles
         int m_startx;
         int m_starty;
         string OSM_PATH = @"C:\OSMTiles\";
+         
+
+        public bool ShowLatLon(string name, int zoom, double lat, double lon, int mapX, int mapY, out string outMessage)
+        {
+            LatLongToPixelXYOSM(lat, lon, zoom,
+                                out int pixelX,
+                                out int pixelY,
+                                out int tilex,
+                                out int tiley);
+
+            
+            int x = 0;
+            int y = 0;
+            int tileIndex = 0;
+            m_allTiles.Clear();
+            this.Controls.Clear();
+            outMessage = string.Empty;
+
+            // draw selected tile 
+            //if (AddMapTile(name, tilex, tiley, zoom, mapX, mapY, tileIndex, out outMessage) == false)
+               // return false;
+
+            
+            tileIndex++;
+            // draw all x until y
+            for (int j = 0; j < mapY; j++)
+            {
+                for (int i = 0; i < MAX_TILES; i++)
+                {
+                    if (AddMapTile(name, tilex - mapX + i, tiley - mapY + j, zoom, i, j, tileIndex, out outMessage) == false)
+                        return false;
+                    tileIndex++;
+                }
+            }
+
+            // draw all y to the end 
+            for (int j = mapY + 1; j < MAX_TILES; j++)
+            {
+                for (int i = 0; i < MAX_TILES; i++)
+                {
+                    if (AddMapTile(name, tilex - mapX + i, tiley - mapY + j, zoom, i, j, tileIndex, out outMessage) == false)
+                        return false;
+                    tileIndex++;
+                }
+            }
+
+             
+            for (int i = 0; i < MAX_TILES; i++)
+            {
+                if (AddMapTile(name, tilex - mapX + i, tiley , zoom, i, mapY, tileIndex, out outMessage) == false)
+                    return false;
+                tileIndex++;
+            }
+             
+
+            return true;
+        }
+        bool AddMapTile(string name, int tilex , int tiley, int zoom, int mapX, int mapY, int tileIndex, out string outMessage)
+        {
+            outMessage = string.Empty;
+            // Add Center Tile:            
+            var q = (from ll in tilesBlock
+                     where ll.name.ToLower() == name.ToLower() && ll.zoom == zoom &&
+                     ll.x == (tilex) && ll.y == (tiley)
+                     select ll).ToList();
+
+            if (q.Count == 0)
+            {
+                outMessage = "Missing tiles," + (tilex) + "," + (tiley) + "," + zoom;
+                return false;
+            }
+            if (q.Count > 1)
+            {
+                outMessage = "Error : Found 2 tiles for," + (tilex) + "," + (tiley) + "," + zoom;
+                return false;
+            }
+
+            TileBlock r = q.SingleOrDefault();
+            MapPictureBox b;
+
+            b = AddTile(mapX, mapY, tileIndex, r.fileName);
+
+            m_allTiles.Add(b);
+
+            b.tileBlock = r;
+            this.Controls.Add(b);
+            return true;
+        }
+
         public bool ShowLatLon(string name, int zoom, double lat, double lon, out string outMessage)
         {
             LatLongToPixelXYOSM(lat, lon, zoom,
@@ -106,17 +212,17 @@ namespace DownloadOSMTiles
                                 out int tilex,
                                 out int tiley);
 
-            //string fileName = string.Format("OSM_PATH{0}\\_{1}_{2}_{3}_{4}_{5}.png", name, zoom, tilex, tiley, pixelX, pixelY);
+
             int x = 0;
             int y = 0;
             int tileIndex = 0;
             m_allTiles.Clear();
             this.Controls.Clear();
             outMessage = string.Empty;
-            for (int j = 0; j < 7; j++)
+            for (int j = 0; j < MAX_TILES; j++)
             {
                 x = 0;
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < MAX_TILES; i++)
                 {
                     var q = (from ll in tilesBlock
                              where ll.name.ToLower() == name.ToLower() && ll.zoom == zoom &&
@@ -125,29 +231,22 @@ namespace DownloadOSMTiles
 
                     if (q.Count == 0)
                     {
-                        outMessage = (tilex + i) + "," + (tiley + j) + "   Zoom: " + zoom;
+                        outMessage = "Missing tiles," + (tilex + i) + "," + (tiley + j) + "," + zoom;
                         return false;
                     }
                     if (q.Count > 1)
                     {
-                        outMessage = "Error : Found 2 tiles for: " + (tilex + i) + "," + (tiley + j) + "Zoom: " + zoom;
+                        outMessage = "Error : Found 2 tiles for," + (tilex + i) + "," + (tiley + j) + "," + zoom;
                         return false;
                     }
 
-
                     TileBlock r = q.SingleOrDefault();
-
                     MapPictureBox b;
-                    if (r.bitmap != null)
-                    {
-                        b = AddTile(x, y, tileIndex, r.bitmap);
-                    }
-                    else
-                    {
-                        b = AddTile(x, y, tileIndex, r.fileName);
-                    }
+
+                    b = AddTile(x, y, tileIndex, r.fileName);
+
                     m_allTiles.Add(b);
-                    b.SizeMode = PictureBoxSizeMode.Normal;
+
                     b.tileBlock = r;
                     this.Controls.Add(b);
                     x++;
@@ -219,32 +318,25 @@ namespace DownloadOSMTiles
 
         MapPictureBox AddTile(int x, int y, int i, Bitmap b)
         {
-            MapPictureBox pb = new MapPictureBox();
+            MapPictureBox pb = new MapPictureBox(x,y);
             pb.Name = "pictureBox" + i;
             pb.Size = new System.Drawing.Size(b.Width, b.Height);
             pb.TabIndex = i;
             pb.TabStop = false;
-            pb.MouseMove += Pb_MouseMove;
-            pb.MouseDown += Pb_MouseDown;
-            pb.MouseUp += Pb_MouseUp;
             pb.MouseWheel += Pb_MouseWheel;
+            pb.MouseMove += Pb_MouseMove;
             pb.Location = new System.Drawing.Point(x * pb.Size.Width, y * pb.Size.Height);
             pb.Image = b;
             return pb;
         }
 
-        private void Pb_MouseUp(object sender, MouseEventArgs e)
+        private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
-            m_direction = MOUSE_DIRECTION.NONE;
-            m_mouseDown = false;
+            MapPictureBox pb = (MapPictureBox)sender;
+            pMapControlCallback(pb.tileBlock, 1, e.X, e.Y);
+             
         }
 
-        int m_firstMouseX;
-        int m_firstMouseY;
-
-        int m_mouseX;
-        int m_mouseY;
-        MOUSE_DIRECTION m_direction = MOUSE_DIRECTION.NONE;
         public enum MOUSE_DIRECTION
         {
             NONE,
@@ -254,13 +346,10 @@ namespace DownloadOSMTiles
             RIGHT
         }
 
-        private void Pb_MouseDown(object sender, MouseEventArgs e)
-        {
-            m_mouseDown = true;
-        }
         int INC_SIZE = 10;
         MapControlCallback pMapControlCallback;
         MapControlZoomCallback pMapControlZoomCallback;
+        MapMsgCallack pMapMsgCallack;
         public void MoveLeft()
         {
             for (int i = 0; i < m_allTiles.Count; i++)
@@ -289,82 +378,65 @@ namespace DownloadOSMTiles
                 m_allTiles[i].Top -= INC_SIZE;
             }
         }
-        public void SetCallback(MapControlCallback p, MapControlZoomCallback p1)
+        public void SetCallback(MapControlCallback p, MapControlZoomCallback p1, MapMsgCallack p2)
         {
             pMapControlCallback = p;
             pMapControlZoomCallback = p1;
-        }
-        int m_lastMouseX = -1;
-        int m_lastMouseY = -1;
-        private void Pb_MouseMove(object sender, MouseEventArgs e)
-        {
-            MapPictureBox p = sender as MapPictureBox;
-
-            if (Math.Abs(m_lastMouseX - e.X) <= 5 && Math.Abs(m_lastMouseY - e.Y) <= 5)
-                return;
-
-            
-            m_mouseX = e.X;
-            m_mouseY = e.Y;
-            
-            if (m_mouseDown && m_mouseX < m_lastMouseX)
-            {               
-                m_direction = MOUSE_DIRECTION.LEFT;
-                m_lastMouseX = e.X;
-            } else 
-            if (m_mouseDown && m_mouseX > m_lastMouseX)
-            {
-                m_direction = MOUSE_DIRECTION.RIGHT;
-                m_lastMouseX = e.X;
-            }
-            else
-            if (m_mouseDown && m_mouseY > m_lastMouseY)
-            {
-                m_direction = MOUSE_DIRECTION.DOWN;
-                m_lastMouseY = e.Y;
-            }
-            else
-            if (m_mouseDown && m_mouseY < m_lastMouseY)
-            {
-                m_direction = MOUSE_DIRECTION.UP;
-                m_lastMouseY = e.Y;
-            }
-
-            pMapControlCallback(p.tileBlock , 0 , m_direction, string.Empty);
-                
+            pMapMsgCallack = p2;
         }
 
         MapPictureBox AddTile(int x, int y, int i, string fileName)
         {
             int width = 256;
             int height = 256;
-            MapPictureBox pb = new MapPictureBox();
+            MapPictureBox pb = new MapPictureBox(x,y);
             pb.Name = "pictureBox" + i;
             pb.Size = new System.Drawing.Size(width, height);
             pb.TabIndex = i;
             pb.TabStop = false;
-            pb.MouseMove += Pb_MouseMove;
-            pb.MouseDown += Pb_MouseDown;
-            pb.MouseUp += Pb_MouseUp;
             pb.MouseWheel += Pb_MouseWheel;
+            pb.MouseMove += Pb_MouseMove;
             pb.Location = new System.Drawing.Point(x * pb.Size.Width, y * pb.Size.Height);
             pb.ImageLocation = fileName;
             return pb;
         }
        
+
         private void Pb_MouseWheel(object sender, MouseEventArgs e)
         {
             MapPictureBox p = sender as MapPictureBox;
 
-            if (e.Delta > 0)
-            {
-                pMapControlZoomCallback(p.tileBlock, true);
-            }
-            else
+            if (ModifierKeys.HasFlag(Keys.Control))
             {
 
-                pMapControlZoomCallback(p.tileBlock, false);
+                if (e.Delta > 0)
+                {
+                    pMapControlZoomCallback(p.tileBlock, p.X, p.Y, true);
+                }
+                else
+                {
+
+                    pMapControlZoomCallback(p.tileBlock, p.X, p.Y, false);
+                }
             }
         }
+        POINT m_lastDrawLinePoint;
+        public void DrawLine(POINT pt)
+        {
+            IntPtr hdc = GetWindowDC(this.Handle);
+            Graphics g = Graphics.FromHdc(hdc);
+            Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));
+            g.DrawLine(pen, m_lastDrawLinePoint.x - this.Left, 
+                            m_lastDrawLinePoint.y - this.Top - 10, 
+                            pt.x - this.Left, pt.y - this.Top - 10);
+            g.Dispose();
+            ReleaseDC(this.Handle, hdc);
+            m_lastDrawLinePoint = pt;
+        }
+        public void RedrawWindow()
+        {
+            RedrawWindow(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+        }
+
     }
 }

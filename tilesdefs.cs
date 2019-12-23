@@ -25,8 +25,8 @@ namespace DownloadOSMTiles
         public int y;
         public int pixelx;
         public int pixely;
-        public float lat;
-        public float lon;
+        public double lat;
+        public double lon;
         public int zoom;
         public string name;
         public string fileName;

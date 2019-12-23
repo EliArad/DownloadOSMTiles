@@ -58,6 +58,7 @@
     <Compile Include="MapPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="MouseHook.cs" />
     <Compile Include="TileDB.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

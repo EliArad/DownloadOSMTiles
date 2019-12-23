@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Windows.Forms;
 using static DownloadOSMTiles.MapControl;
+using static DownloadOSMTiles.MouseHook;
 
 namespace DownloadOSMTiles
 {
@@ -16,55 +17,126 @@ namespace DownloadOSMTiles
         public Form1()
         {
             InitializeComponent();
+            KeyPreview = true;
             Directory.CreateDirectory(m_baseDir);
 
             MapControlCallback p = new MapControlCallback(MapControlCallbackMsg);
             MapControlZoomCallback p1 = new MapControlZoomCallback(MapControlZoomCallbackMsg);
-            mapControl1.SetCallback(p,p1);
-        }
+            MapMsgCallack p2 = new MapMsgCallack(MapMsgCallackFunc);
+            mapControl1.SetCallback(p,p1,p2);
 
-        void MapControlZoomCallbackMsg(TileBlock tb , bool zoomIn)
+            MouseHook.Start();
+            MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
+            MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
+            MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
+
+        }
+        int m_lastMousex = 0;
+        bool m_leftMouseDown = false;
+        private void LeftMouseDownEvent()
         {
+            if (ModifierKeys.HasFlag(Keys.Control))
+            {
+                m_leftMouseDown = true;
+            }            
+        }
+        private void LeftMouseUpEvent()
+        {
+            m_leftMouseDown = false;
+        }
+        private void RightMouseEvent()
+        {
+
+        }
+       
+        private void MoveMouseEvent(POINT pt)
+        {
+            if (m_leftMouseDown)
+            {
+                if (pt.x < m_lastMousex)
+                {
+                    //Console.WriteLine("move to left" + pt.x + "," + pt.y);
+                    mapControl1.MoveLeft();
+                }
+                if (pt.x > m_lastMousex)
+                {
+                    //Console.WriteLine("move to right" + pt.x + "," + pt.y);
+                    mapControl1.MoveRight();
+                }
+            }
+            m_lastMousex = pt.x;
+
+            mapControl1.DrawLine(pt);
+
+
+        }
+        void MapMsgCallackFunc(int code, string msg)
+        {
+
+        }
+        void MapControlZoomCallbackMsg(TileBlock tb , int mapX, int mapY, bool zoomIn)
+        {
+
+            string outMessage;
             if (zoomIn == true)
             {
-                if (mapControl1.ShowLatLon(tb.name, tb.zoom + 1, tb.lat, tb.lon, out string outMessage) == false)
+                if (mapControl1.ShowLatLon(tb.name, tb.zoom + 1, m_latitude, m_longitude, mapX, mapY, out outMessage) == false)
                 {
+                    string[] s = outMessage.Split(',');
                     MessageBox.Show("Missing tiles: " + outMessage);
+                    if (s[0] == "Missing tiles")
+                    {
+                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                        if (d == DialogResult.Yes)
+                        {
+                            DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                        }
+                    }
+                }
+                else
+                {
+                    cmbZoom.Text = (tb.zoom + 1).ToString();
                 }
             }
             else
             {
-                if (mapControl1.ShowLatLon(tb.name, tb.zoom - 1, tb.lat, tb.lon, out string outMessage) == false)
+                if (mapControl1.ShowLatLon(tb.name, tb.zoom - 1, m_latitude, m_longitude, mapX, mapY, out outMessage) == false)
                 {
+                    string[] s = outMessage.Split(',');
                     MessageBox.Show("Missing tiles: " + outMessage);
+                    if (s[0] == "Missing tiles")
+                    {
+                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                        if (d == DialogResult.Yes)
+                        {
+                            DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                        }
+                    }
+                }
+                else
+                {
+                    cmbZoom.Text = (tb.zoom - 1).ToString();
                 }
             }
         }
-        void MapControlCallbackMsg(TileBlock tb, int code, MOUSE_DIRECTION direction, string msg)
+        double m_latitude;
+        double m_longitude;
+        void MapControlCallbackMsg(TileBlock tb, int code, int mouseX, int mouseY)
         {
-            lblLat.Text = tb.lat.ToString();
-            lblLon.Text = tb.lon.ToString();
+
             lblTileX.Text = tb.x.ToString();
             lblTileY.Text = tb.y.ToString();
-            lblPixelX.Text = tb.pixelx.ToString();
-            lblPixelY.Text = tb.pixely.ToString();
+            int px = tb.pixelx + mouseX;
+            int py = tb.pixely + mouseY;
+            lblPixelX.Text = (px).ToString();
+            lblPixelY.Text = (py).ToString();
 
-            if (direction ==  MOUSE_DIRECTION.LEFT)
-            {
-                mapControl1.MoveLeft();
-            }
-            else if (direction == MOUSE_DIRECTION.RIGHT)
-            {
-                mapControl1.MoveRight();
-            }
-            else if (direction == MOUSE_DIRECTION.UP)
-            {
-                mapControl1.MoveUp();
-            }
-            else if (direction == MOUSE_DIRECTION.DOWN)
-            {
-                mapControl1.MoveDown();
-            }
+            PixelXYToLatLongOSM(px, py, tb.zoom, out m_latitude, out m_longitude);
+            lblLat.Text = m_latitude.ToString();
+            lblLon.Text = m_longitude.ToString();
+
+
+
 
         }
         private void button1_Click(object sender, EventArgs e)
@@ -100,16 +172,16 @@ namespace DownloadOSMTiles
 
         }
 
-        void PixelXYToLatLongOSM(int pixelX, int pixelY, int zoomLevel, out float latitude, out float longitude)
+        void PixelXYToLatLongOSM(int pixelX, int pixelY, int zoomLevel, out double latitude, out double longitude)
         {
             int mapSize = (int)Math.Pow(2, zoomLevel) * 256;
             //int tileX = (int)Math.Truncate((decimal)(pixelX / 256));
             //int tileY = (int)Math.Truncate((decimal)pixelY / 256);
 
-            float n = (float)Math.PI - ((2.0f * (float)Math.PI * (ClipByRange(pixelY, mapSize - 1) / 256)) / (float)Math.Pow(2.0, zoomLevel));
+            double n = (float)Math.PI - ((2.0f * (double)Math.PI * (ClipByRange(pixelY, mapSize - 1) / 256)) / (double)Math.Pow(2.0, zoomLevel));
 
-            longitude = ((ClipByRange(pixelX, mapSize - 1) / 256) / (float)Math.Pow(2.0, zoomLevel) * 360.0f) - 180.0f;
-            latitude = (180.0f / (float)Math.PI * (float)Math.Atan(Math.Sinh(n)));
+            longitude = ((ClipByRange(pixelX, mapSize - 1) / 256) / (double)Math.Pow(2.0, zoomLevel) * 360.0f) - 180.0f;
+            latitude = (180.0f / (float)Math.PI * (double)Math.Atan(Math.Sinh(n)));
         }
          
 
@@ -161,11 +233,17 @@ namespace DownloadOSMTiles
             int pixely = tile.pixely;
             int countMissing = 0;
             int countDownload = 0;
-
+            m_stopDownload = false;
             for (int x = tile.x; x < (tile.x + tile.x_size); x++)
             {               
                 for (int y = tile.y; y < (tile.y + tile.y_size); y++)
                 {
+                    if (m_stopDownload == true)
+                    {
+                        m_stopDownload = false;
+                        return;
+                    }
+
                     try
                     {
                         string fileName = m_baseDir + tile.name + "\\_" + tile.zoom + "_" + x + "_" + y + "_" + pixelx + "_" + pixely + "_" + ".png";
@@ -204,9 +282,14 @@ namespace DownloadOSMTiles
             int pixely = tiles[0].pixely;
             int countMissing = 0;
             int countDownload = 0;
+            m_stopDownload = false;
             foreach (Tile tile in tiles)
             {
-
+                if (m_stopDownload == true)
+                {
+                    m_stopDownload = false;
+                    return;
+                }
                 for (int x = tile.x; x < (tile.x + tile.x_size); x++)
                 {
 
@@ -239,20 +322,25 @@ namespace DownloadOSMTiles
             }
             cb(true, "finished", countMissing, countDownload);
         }
-
-
+ 
         public async void DownloadTilesFromList(List<Tile> tiles, Action<bool, string, int, int> cb)
         {
             Directory.CreateDirectory(m_baseDir + tiles[0].name);
             HttpClient client = new HttpClient();
 
-
+            m_stopDownload = false;
             var random = new Random();
              
             int countMissing = 0;
             int countDownload = 0;
             foreach (Tile tile in tiles)
-            { 
+            {
+                if (m_stopDownload == true)
+                {
+                    m_stopDownload = false;
+                    return;
+                }
+
                 try
                 {
                     string fileName = m_baseDir + tile.name + "\\_" + tile.zoom + "_" + tile.x + "_" + tile.y + "_" + tile.pixelx + "_" + tile.pixely + "_" + ".png";
@@ -263,12 +351,16 @@ namespace DownloadOSMTiles
                         File.WriteAllBytes(fileName, data);
                         Thread.Sleep(2000);
                         countDownload++;
-                        Console.WriteLine("{0}:{1}", countDownload, tiles.Count);
+                        string s = string.Format("{0}:{1} [ {2},{3},{4} ]", countDownload, tiles.Count,tile.x,tile.y, tile.zoom);
+                        Console.WriteLine(s);
+                        label13.Text = s;                        
                     }
                     else
                     {
                         countDownload++;
-                        Console.WriteLine("{0}:{1}", countDownload, tiles.Count);
+                        string s = string.Format("{0}:{1}", countDownload, tiles.Count);
+                        Console.WriteLine(s);
+                        label13.Text = s;
                     }
                 }
                 catch (Exception err)
@@ -380,7 +472,7 @@ namespace DownloadOSMTiles
         {
             if (m_initdone == false)
                 return;
-            //mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
+             
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -464,14 +556,28 @@ namespace DownloadOSMTiles
                                        double.Parse(txtCreateLon.Text),
                                        out string outMessage) == false)
             {
-                MessageBox.Show("Tile not found: " + outMessage);
+                
+                string[] s = outMessage.Split(',');
+                MessageBox.Show("Missing tiles: " + outMessage);
+                if (s[0] == "Missing tiles")
+                {
+                    DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                    if (d == DialogResult.Yes)
+                    {
+                        DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                    }
+                }
             }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             //DownloadFromPixelXAndPixelY();
-            DownloadFromXY();
+            int startTilex = int.Parse(txtStartX.Text);
+            int startTiley = int.Parse(txtStartY.Text);
+            int zoom = int.Parse(txtDownloadCount.Text);
+
+            DownloadFromXY(startTilex, startTiley , zoom);
         }
         void DownloadFromPixelXAndPixelY()
         {
@@ -509,11 +615,9 @@ namespace DownloadOSMTiles
             });
         }
 
-        void DownloadFromXY()
+        void DownloadFromXY(int startTilex, int startTiley, int zoom)
         {
-            int startTilex = int.Parse(txtStartX.Text);
-            int startTiley = int.Parse(txtStartY.Text);
-            int zoom = int.Parse(txtDownloadCount.Text);
+            
             List<Tile> tiles = new List<Tile>();
             int orig_size = int.Parse(txtDownloadCount.Text);
             int size = 15;
@@ -538,12 +642,23 @@ namespace DownloadOSMTiles
                 }
 
             }
-
-
+             
             DownloadTilesFromList(tiles, (status, msg, countMissing, countDownload) =>
             {
                 MessageBox.Show("Finished download: " + countDownload);
             });
+        }
+
+        bool m_stopDownload = false;
+        private void button6_Click(object sender, EventArgs e)
+        {
+            m_stopDownload = true;
+             
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+           mapControl1.RedrawWindow();
         }
     }
 }
