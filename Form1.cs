@@ -14,9 +14,20 @@ namespace DownloadOSMTiles
     {
         string m_baseDir = "c:\\OSMTiles\\";
         bool m_initdone = false;
+
+        public enum DRAW_SHAPE
+        {
+            NONE,
+            LINE,
+            CIRCLE,
+            RECT,
+            TRIANGLE               
+        }
+
         public Form1()
         {
             InitializeComponent();
+            cmbDrawShape.SelectedIndex = 0;
             KeyPreview = true;
             Directory.CreateDirectory(m_baseDir);
 
@@ -32,13 +43,11 @@ namespace DownloadOSMTiles
 
         }
         int m_lastMousex = 0;
+        int m_lastMousey = 0;
         bool m_leftMouseDown = false;
         private void LeftMouseDownEvent()
-        {
-            if (ModifierKeys.HasFlag(Keys.Control))
-            {
-                m_leftMouseDown = true;
-            }            
+        {           
+            m_leftMouseDown = true;           
         }
         private void LeftMouseUpEvent()
         {
@@ -48,28 +57,48 @@ namespace DownloadOSMTiles
         {
 
         }
-       
+
         private void MoveMouseEvent(POINT pt)
         {
-            if (m_leftMouseDown)
+            lblMouseXY.Text = pt.x + "," + pt.y;
+            if (m_leftMouseDown && ModifierKeys.HasFlag(Keys.Control))
             {
                 if (pt.x < m_lastMousex)
                 {
                     //Console.WriteLine("move to left" + pt.x + "," + pt.y);
                     mapControl1.MoveLeft();
-                }
+                } else 
                 if (pt.x > m_lastMousex)
                 {
                     //Console.WriteLine("move to right" + pt.x + "," + pt.y);
                     mapControl1.MoveRight();
                 }
+                else
+                if (pt.y < m_lastMousey)
+                {
+                    mapControl1.MoveUp();
+                }
+                else
+                if (pt.y > m_lastMousey)
+                {
+                    mapControl1.MoveDown();
+                }
             }
             m_lastMousex = pt.x;
+            m_lastMousey = pt.y;
 
-            mapControl1.DrawLine(pt);
+            switch (m_drawShape)
+            {
+                case DRAW_SHAPE.LINE:
+                {
+                     mapControl1.DrawLine(pt, m_leftMouseDown);                    
+                }
+                break;
+            }
 
 
         }
+        DRAW_SHAPE m_drawShape = DRAW_SHAPE.NONE;
         void MapMsgCallackFunc(int code, string msg)
         {
 
@@ -503,7 +532,7 @@ namespace DownloadOSMTiles
             if (e.KeyCode == Keys.Enter)
             {
                 cmbZoom.Text = "9";
-                mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
+                
             }                 
         }
 
@@ -669,6 +698,28 @@ namespace DownloadOSMTiles
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             MouseHook.Stop();
+        }
+
+        private void cmbDrawShape_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            m_drawShape = (DRAW_SHAPE)cmbDrawShape.SelectedIndex;
+        }
+
+        private void showBorderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showBorderToolStripMenuItem.Checked = !showBorderToolStripMenuItem.Checked;
+            mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
+        }
+
+        private void showXYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showXYToolStripMenuItem.Checked = !showXYToolStripMenuItem.Checked;
+            mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            mapControl1.AddRowTilesOnTheRight();
         }
     }
 }
