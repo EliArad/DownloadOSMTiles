@@ -46,7 +46,12 @@ namespace DownloadOSMTiles
         {
             this.BorderStyle = b;
         }
-           
+
+        public TileBlock GetTileProp()
+        {
+            return tileBlock;
+        }
+
         private void MapPictureBox_Paint(object sender, PaintEventArgs e)
         {
             if (m_drawXY == true)

@@ -271,16 +271,29 @@ namespace DownloadOSMTiles
             return pb;
         }
 
+        int m_rightMostTile = 1111111;
+        int m_topMostTile = 0;
         private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
             MapPictureBox pb = (MapPictureBox)sender;
             pMapControlCallback(pb.tileBlock, 1, e.X, e.Y);
-
-            Console.WriteLine(this.Right);
-            Console.WriteLine(m_allTiles[0].Left);
-            
-
-             
+            string outMessage;
+            m_rightMostTile = m_allTiles.Max(n => n.Right);                           
+            if ((this.Right - this.Left) > m_rightMostTile)
+            {                 
+                if (AddRowTilesOnTheRight(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                {
+                    pMapMsgCallack(8912, outMessage);
+                }
+            }
+            m_topMostTile = m_allTiles.Min(n => n.Top);
+            if (m_topMostTile > this.Top)
+            {
+                if (AddRowTilesOnTheTop(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                {
+                    pMapMsgCallack(8912, outMessage);
+                }
+            }
         }
 
         public enum MOUSE_DIRECTION
@@ -418,23 +431,56 @@ namespace DownloadOSMTiles
             }
         }
 
-        public void AddRowTilesOnTheRight()
+        
+        public bool AddRowTilesOnTheRight(string name, out string outMessage)
         {
+            outMessage = string.Empty;
+            int tilex = m_allTiles.Min(n => n.GetTileProp().x);
+            int tiley = m_allTiles.Min(n => n.GetTileProp().y);
+            int topMostTile = m_allTiles.Min(n => n.Top);
             for (int i = 0; i < MAX_TILES; i++)
             {
-                AddRowTilesOnTheRight("israel",
-                                       304 + m_lastXTile,
-                                       205 + i, 
-                                       9,  // zoom
-                                       m_lastXTile, // x on the right 
-                                       0 + i,
-                                       m_allTiles[m_lastXTile-1].Right, 
-                                       i * 256, 
-                                       out string outMessage);
+                if (AddDynamicTiles(name,
+                                tilex + m_lastXTile,
+                                tiley + i,
+                                9,  // zoom
+                                m_lastXTile, // x on the right 
+                                0 + i,
+                                m_rightMostTile,
+                                topMostTile + i * 256,
+                                out outMessage) == false)
+                    return false;
+            }            
+            m_lastXTile += 1;
+            return true;
+        }
+
+        public bool AddRowTilesOnTheTop(string name, out string outMessage)
+        {
+            outMessage = string.Empty;
+            int tilex = m_allTiles.Min(n => n.GetTileProp().x);
+            int tiley = m_allTiles.Min(n => n.GetTileProp().y);
+            int topMostTile = m_allTiles.Min(n => n.Top);
+
+            int leftMostTile = m_allTiles.Min(n => n.Left);
+            
+            for (int i = 0; i < MAX_TILES; i++)
+            {
+                if (AddDynamicTiles("israel",
+                                tilex + i,  // tilex
+                                tiley - 1,            // tiley
+                                9,  // zoom
+                                0 + i, //  mapx
+                                0,        // mapy
+                                leftMostTile + i * 256,    // locx
+                                topMostTile - 256,  // locy
+                                out outMessage) == false)
+                    return false;
             }
             m_lastXTile += 1;
+            return true;
         }
-        bool AddRowTilesOnTheRight(string name, 
+        bool AddDynamicTiles(string name, 
                                    int tilex, 
                                    int tiley, 
                                    int zoom, 

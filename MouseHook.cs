@@ -84,6 +84,11 @@ namespace DownloadOSMTiles
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
+            public POINT(int a, int b)
+            {
+                x = a;
+                y = b;
+            }
             public int x;
             public int y;
         }

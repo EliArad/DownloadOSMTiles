@@ -34,9 +34,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtCreateLon = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnGo = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtCreateSize = new System.Windows.Forms.TextBox();
+            this.cmbZoom2 = new System.Windows.Forms.ComboBox();
+            this.btnGo = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -129,9 +129,9 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.btnGo);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.txtCreateSize);
+            this.groupBox1.Controls.Add(this.cmbZoom2);
+            this.groupBox1.Controls.Add(this.btnGo);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
@@ -145,6 +145,27 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
             // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(11, 109);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(34, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Zoom";
+            // 
+            // cmbZoom2
+            // 
+            this.cmbZoom2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cmbZoom2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbZoom2.FormattingEnabled = true;
+            this.cmbZoom2.Location = new System.Drawing.Point(68, 106);
+            this.cmbZoom2.Name = "cmbZoom2";
+            this.cmbZoom2.Size = new System.Drawing.Size(103, 21);
+            this.cmbZoom2.TabIndex = 16;
+            this.cmbZoom2.SelectedIndexChanged += new System.EventHandler(this.cmbZoom2_SelectedIndexChanged);
+            // 
             // btnGo
             // 
             this.btnGo.Location = new System.Drawing.Point(177, 45);
@@ -154,23 +175,6 @@
             this.btnGo.Text = "GO";
             this.btnGo.UseVisualStyleBackColor = true;
             this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 104);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(25, 13);
-            this.label5.TabIndex = 14;
-            this.label5.Text = "size";
-            // 
-            // txtCreateSize
-            // 
-            this.txtCreateSize.Location = new System.Drawing.Point(71, 97);
-            this.txtCreateSize.Name = "txtCreateSize";
-            this.txtCreateSize.Size = new System.Drawing.Size(100, 20);
-            this.txtCreateSize.TabIndex = 13;
-            this.txtCreateSize.Text = "9";
             // 
             // label4
             // 
@@ -505,7 +509,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(262, 231);
+            this.button1.Location = new System.Drawing.Point(239, 231);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 32;
@@ -580,8 +584,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtCreateSize;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lblLon;
@@ -613,6 +615,8 @@
         private System.Windows.Forms.ToolStripMenuItem showXYToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showBorderToolStripMenuItem;
         private System.Windows.Forms.Label lblMouseXY;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbZoom2;
         private System.Windows.Forms.Button button1;
     }
 }

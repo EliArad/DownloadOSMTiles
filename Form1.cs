@@ -101,7 +101,23 @@ namespace DownloadOSMTiles
         DRAW_SHAPE m_drawShape = DRAW_SHAPE.NONE;
         void MapMsgCallackFunc(int code, string msg)
         {
-
+            switch (code)
+            {
+                case 8912:
+                {
+                    string[] s = msg.Split(',');
+                    MessageBox.Show("Missing tiles: " + msg);
+                    if (s[0] == "Missing tiles")
+                    {
+                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                        if (d == DialogResult.Yes)
+                        {
+                            DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                        }
+                    }
+                }
+                break;
+            }
         }
         void MapControlZoomCallbackMsg(TileBlock tb , int mapX, int mapY, bool zoomIn)
         {
@@ -405,51 +421,7 @@ namespace DownloadOSMTiles
             if (cb != null)
                 cb(true, "finished", countMissing, countDownload);
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            List<Tile> tiles = new List<Tile>();
-            string mapName = txtCreateName.Text;
-            if (mapName == string.Empty)
-                return;
-            
-            int.TryParse(txtCreateSize.Text, out int size);
-            if (size == 0)
-                return;
-
-            try
-            {
-                for (int zoom = 6; zoom < 19; zoom++)
-                {
-                    LatLongToPixelXYOSM(float.Parse(txtCreateLat.Text), float.Parse(txtCreateLon.Text),
-                        zoom, out int pixelX, out int pixelY, out int tilex, out int tiley);
-                    Tile t3 = new Tile
-                    {
-                        x = tilex,
-                        x_size = size,
-                        y = tiley,
-                        y_size = size,
-                        pixelx = pixelX,
-                        pixely = pixelY,
-                        name = mapName,
-                        zoom = zoom
-                    };
-                    tiles.Add(t3);
-                }
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-                return;                    
-            }
-
-            DownloadTiles(tiles, (status, msg, countMissing, countDownload) =>
-            {
-                MessageBox.Show("Finished");
-            });            
-        }
-
-
+         
         List<TileBlock> tilesBlock = new List<TileBlock>();
 
         
@@ -504,9 +476,7 @@ namespace DownloadOSMTiles
 
         private void cmbZoom_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (m_initdone == false)
-                return;
-             
+            cmbZoom2.Text = cmbZoom.Text;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -514,8 +484,10 @@ namespace DownloadOSMTiles
             for (int i = 6; i < 19; i++)
             {
                 cmbZoom.Items.Add(i.ToString());
+                cmbZoom2.Items.Add(i.ToString());
             }
             cmbZoom.Text = "9";
+            cmbZoom2.Text = "9";
 
             if (mapControl1.LoadMapData("tiles_lat_lon_db.json", out string outMessage) == true)
             {
@@ -716,10 +688,15 @@ namespace DownloadOSMTiles
             showXYToolStripMenuItem.Checked = !showXYToolStripMenuItem.Checked;
             mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
         }
+          
+        private void cmbZoom2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cmbZoom.Text = cmbZoom2.Text;
+        }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            mapControl1.AddRowTilesOnTheRight();
+            mapControl1.AddRowTilesOnTheTop("israel", out string outMessage);
         }
     }
 }
