@@ -271,6 +271,7 @@ namespace DownloadOSMTiles
 
         int m_rightMostTile = 1111111;
         int m_topMostTile = 0;
+        int m_bottomMostTile = 0;
         bool m_missingTiles = false;
         private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
@@ -297,6 +298,17 @@ namespace DownloadOSMTiles
                         pMapMsgCallack(8912, outMessage);
                     }
                 }
+                m_bottomMostTile = m_allTiles.Max(n => n.Bottom);
+                if (m_topMostTile > this.Bottom)
+                {
+                    if (AddRowTilesOnTheBottom(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                    {
+                        m_missingTiles = true;
+                        pMapMsgCallack(8912, outMessage);
+                    }
+                }
+
+
             }
         }
 
@@ -470,7 +482,7 @@ namespace DownloadOSMTiles
             
             for (int i = 0; i < MAX_TILES; i++)
             {
-                if (AddDynamicTiles("israel",
+                if (AddDynamicTiles(name,
                                 tilex + i,  // tilex
                                 tiley - 1,            // tiley
                                 m_allTiles[0].GetTileProp().zoom,  // zoom
@@ -481,8 +493,34 @@ namespace DownloadOSMTiles
                                 out outMessage) == false)
                     return false;
             }
-            m_lastXTile += 1;
+            
             return true;
+        }
+        public bool AddRowTilesOnTheBottom(string name, out string outMessage)
+        {
+            outMessage = string.Empty;
+            int tilex = m_allTiles.Min(n => n.GetTileProp().x);
+            int tiley = m_allTiles.Max(n => n.GetTileProp().y);
+            int bottomMostTile = m_allTiles.Max(n => n.Bottom);
+
+            int leftMostTile = m_allTiles.Min(n => n.Left);
+
+            for (int i = 0; i < MAX_TILES; i++)
+            {
+                if (AddDynamicTiles(name,
+                                tilex + i,  // tilex
+                                tiley - 1,            // tiley
+                                m_allTiles[0].GetTileProp().zoom,  // zoom
+                                0 + i, //  mapx
+                                0,        // mapy
+                                leftMostTile + i * 256,    // locx
+                                bottomMostTile + 256,  // locy
+                                out outMessage) == false)
+                    return false;
+            }
+            
+            return true;
+
         }
         bool AddDynamicTiles(string name, 
                                    int tilex, 
@@ -560,6 +598,7 @@ namespace DownloadOSMTiles
                 HistoryBlocks = new Dictionary<string, TileBlock>();
                 return false;
             }
-        }       
+        }
+         
     }
 }
