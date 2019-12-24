@@ -29,6 +29,7 @@ namespace DownloadOSMTiles
             InitializeComponent();
             cmbDrawShape.SelectedIndex = 0;
             KeyPreview = true;
+            this.KeyUp += Form1_KeyUp;
             Directory.CreateDirectory(m_baseDir);
 
             MapControlCallback p = new MapControlCallback(MapControlCallbackMsg);
@@ -42,6 +43,54 @@ namespace DownloadOSMTiles
             MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
 
         }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                cmbZoom.Text = "9";
+            }
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                if (txtLocationName.Text == string.Empty)
+                {
+                    MessageBox.Show("Please specify location name to save");
+                    return;
+                }
+                mapControl1.LoadHistory("MyHistoryBlock.json");
+                if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text) == false)
+                {
+                    TileBlock s = new TileBlock();
+
+                    s.x = int.Parse(lblTileX.Text);
+                    s.y = int.Parse(lblTileY.Text);
+                    s.pixelx = int.Parse(lblPixelX.Text);
+                    s.pixely = int.Parse(lblPixelY.Text);
+
+                    s.lat = double.Parse(lblLat.Text);
+                    s.lon = double.Parse(lblLon.Text);
+                    s.zoom = int.Parse(cmbZoom.Text);
+                    s.name = txtCreateName.Text;
+                    mapControl1.HistoryBlocks.Add(txtLocationName.Text, s);
+                    mapControl1.SaveHistory("MyHistoryBlock.json");
+                }
+                else
+                {
+                    TileBlock s = mapControl1.HistoryBlocks[txtLocationName.Text];
+                    s.x = int.Parse(lblTileX.Text);
+                    s.y = int.Parse(lblTileY.Text);
+                    s.pixelx = int.Parse(lblPixelX.Text);
+                    s.pixely = int.Parse(lblPixelY.Text);
+
+                    s.lat = double.Parse(lblLat.Text);
+                    s.lon = double.Parse(lblLon.Text);
+                    s.zoom = int.Parse(cmbZoom.Text);
+                    s.name = txtCreateName.Text;
+                    mapControl1.SaveHistory("MyHistoryBlock.json");
+                }
+            }
+        }
+
         int m_lastMousex = 0;
         int m_lastMousey = 0;
         bool m_leftMouseDown = false;
@@ -499,15 +548,6 @@ namespace DownloadOSMTiles
             }            
         }
 
-        private void txtCreateName_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                cmbZoom.Text = "9";
-                
-            }                 
-        }
-
         private void btnCreateFromRegion_Click(object sender, EventArgs e)
         {
             int startTilex = int.Parse(txtStartX.Text);
@@ -697,6 +737,11 @@ namespace DownloadOSMTiles
         private void button1_Click_1(object sender, EventArgs e)
         {
             mapControl1.AddRowTilesOnTheTop("israel", out string outMessage);
+        }
+
+        private void btnSaveLocation_Click(object sender, EventArgs e)
+        {
+           
         }
     }
 }

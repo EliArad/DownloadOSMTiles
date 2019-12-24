@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.IO;
 using static DownloadOSMTiles.MouseHook;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DownloadOSMTiles
 {
@@ -54,6 +56,7 @@ namespace DownloadOSMTiles
                 TileDB db = new TileDB(mapfile);
                 if (db.Load(out tilesBlock) == "ok")
                 {
+                    m_missingTiles = false;
                     return true;
                 }
                 this.BackColor = Color.Black;
@@ -273,25 +276,31 @@ namespace DownloadOSMTiles
 
         int m_rightMostTile = 1111111;
         int m_topMostTile = 0;
+        bool m_missingTiles = false;
         private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
             MapPictureBox pb = (MapPictureBox)sender;
             pMapControlCallback(pb.tileBlock, 1, e.X, e.Y);
-            string outMessage;
-            m_rightMostTile = m_allTiles.Max(n => n.Right);                           
-            if ((this.Right - this.Left) > m_rightMostTile)
-            {                 
-                if (AddRowTilesOnTheRight(m_allTiles[0].GetTileProp().name, out outMessage) == false)
-                {
-                    pMapMsgCallack(8912, outMessage);
-                }
-            }
-            m_topMostTile = m_allTiles.Min(n => n.Top);
-            if (m_topMostTile > this.Top)
+            if (m_missingTiles == false)
             {
-                if (AddRowTilesOnTheTop(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                string outMessage;
+                m_rightMostTile = m_allTiles.Max(n => n.Right);
+                if ((this.Right - this.Left) > m_rightMostTile)
                 {
-                    pMapMsgCallack(8912, outMessage);
+                    if (AddRowTilesOnTheRight(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                    {
+                        m_missingTiles = true;
+                        pMapMsgCallack(8912, outMessage);
+                    }
+                }
+                m_topMostTile = m_allTiles.Min(n => n.Top);
+                if (m_topMostTile > this.Top)
+                {
+                    if (AddRowTilesOnTheTop(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                    {
+                        m_missingTiles = true;
+                        pMapMsgCallack(8912, outMessage);
+                    }
                 }
             }
         }
@@ -443,7 +452,7 @@ namespace DownloadOSMTiles
                 if (AddDynamicTiles(name,
                                 tilex + m_lastXTile,
                                 tiley + i,
-                                9,  // zoom
+                                m_allTiles[0].GetTileProp().zoom,  // zoom
                                 m_lastXTile, // x on the right 
                                 0 + i,
                                 m_rightMostTile,
@@ -469,7 +478,7 @@ namespace DownloadOSMTiles
                 if (AddDynamicTiles("israel",
                                 tilex + i,  // tilex
                                 tiley - 1,            // tiley
-                                9,  // zoom
+                                m_allTiles[0].GetTileProp().zoom,  // zoom
                                 0 + i, //  mapx
                                 0,        // mapy
                                 leftMostTile + i * 256,    // locx
@@ -519,5 +528,43 @@ namespace DownloadOSMTiles
             this.Controls.Add(b);
             return true;
         }
+
+
+        public Dictionary<string, TileBlock> HistoryBlocks;
+        
+        public string SaveHistory(string fileName)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(HistoryBlocks);
+                string jsonFormatted = JValue.Parse(json).ToString(Formatting.Indented);
+                File.WriteAllText(fileName, jsonFormatted);
+                return "ok";
+            }
+            catch (Exception err)
+            {
+                return err.Message;
+            }
+        }
+         
+        public bool LoadHistory(string fileName)
+        {
+            try
+            {                
+                if (File.Exists(fileName) == false)
+                {
+                    HistoryBlocks = new Dictionary<string, TileBlock>();
+                    return false; 
+                }
+                string text = File.ReadAllText(fileName);
+                HistoryBlocks = JsonConvert.DeserializeObject<Dictionary<string, TileBlock>>(text);                
+                return true;
+            }
+            catch (Exception err)
+            {
+                HistoryBlocks = new Dictionary<string, TileBlock>();
+                return false;
+            }
+        }       
     }
 }

@@ -17,12 +17,15 @@ namespace DownloadOSMTiles
         bool m_drawTileNumber = false;
         public MapPictureBox(int x, int y, int tileNumber)
         {
+            
             this.Paint += MapPictureBox_Paint;
+         
             SizeMode = PictureBoxSizeMode.Normal;
             m_x = x;
             m_y = y;
             m_tileNumber = tileNumber;
-        }
+        } 
+
         public void DrawXY(bool d)
         {
             m_drawXY = d;

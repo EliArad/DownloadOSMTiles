@@ -72,8 +72,9 @@
             this.showXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showBorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblMouseXY = new System.Windows.Forms.Label();
-            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.button1 = new System.Windows.Forms.Button();
+            this.txtLocationName = new System.Windows.Forms.TextBox();
+            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -210,7 +211,6 @@
             this.txtCreateName.Size = new System.Drawing.Size(100, 20);
             this.txtCreateName.TabIndex = 9;
             this.txtCreateName.Text = "israel";
-            this.txtCreateName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCreateName_KeyDown);
             // 
             // txtCreateLat
             // 
@@ -410,7 +410,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(207, 328);
+            this.button6.Location = new System.Drawing.Point(207, 296);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(108, 28);
             this.button6.TabIndex = 16;
@@ -496,6 +496,23 @@
             this.lblMouseXY.TabIndex = 31;
             this.lblMouseXY.Text = "label14";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(239, 231);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 32;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // txtLocationName
+            // 
+            this.txtLocationName.Location = new System.Drawing.Point(207, 358);
+            this.txtLocationName.Name = "txtLocationName";
+            this.txtLocationName.Size = new System.Drawing.Size(100, 20);
+            this.txtLocationName.TabIndex = 33;
+            // 
             // mapControl1
             // 
             this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -507,21 +524,12 @@
             this.mapControl1.Size = new System.Drawing.Size(1234, 751);
             this.mapControl1.TabIndex = 4;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(239, 231);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 32;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1615, 784);
+            this.Controls.Add(this.txtLocationName);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lblMouseXY);
             this.Controls.Add(this.cmbDrawShape);
@@ -618,6 +626,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbZoom2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox txtLocationName;
     }
 }
 
