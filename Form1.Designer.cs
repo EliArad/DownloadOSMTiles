@@ -75,6 +75,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.txtLocationName = new System.Windows.Forms.TextBox();
             this.mapControl1 = new DownloadOSMTiles.MapControl();
+            this.label14 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -524,11 +526,32 @@
             this.mapControl1.Size = new System.Drawing.Size(1234, 751);
             this.mapControl1.TabIndex = 4;
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(207, 339);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(86, 13);
+            this.label14.TabIndex = 34;
+            this.label14.Text = "Location to save";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(313, 356);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(50, 23);
+            this.button2.TabIndex = 35;
+            this.button2.Text = "Load";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1615, 784);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.txtLocationName);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lblMouseXY);
@@ -627,6 +650,8 @@
         private System.Windows.Forms.ComboBox cmbZoom2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtLocationName;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button button2;
     }
 }
 

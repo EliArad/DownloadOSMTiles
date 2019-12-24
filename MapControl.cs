@@ -112,12 +112,7 @@ namespace DownloadOSMTiles
             pixelX = tilex * 256;
             pixelY = tiley * 256;
         }
-        public void ShowLatLon(float lat, float lon, int zoom)
-        {
-            var q = from ll in tilesBlock
-                    where ll.lat >= lat && ll.lon >= lon && ll.zoom == zoom
-                    select ll;
-        }
+         
         int m_startx;
         int m_starty;
         string OSM_PATH = @"C:\OSMTiles\";

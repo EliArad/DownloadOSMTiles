@@ -41,7 +41,7 @@ namespace DownloadOSMTiles
             MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
             MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
             MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
-
+            mapControl1.LoadHistory("MyHistoryBlock.json");
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
@@ -56,8 +56,7 @@ namespace DownloadOSMTiles
                 {
                     MessageBox.Show("Please specify location name to save");
                     return;
-                }
-                mapControl1.LoadHistory("MyHistoryBlock.json");
+                }                
                 if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text) == false)
                 {
                     TileBlock s = new TileBlock();
@@ -170,7 +169,7 @@ namespace DownloadOSMTiles
         }
         void MapControlZoomCallbackMsg(TileBlock tb , int mapX, int mapY, bool zoomIn)
         {
-
+            
             string outMessage;
             if (zoomIn == true)
             {
@@ -738,10 +737,26 @@ namespace DownloadOSMTiles
         {
             mapControl1.AddRowTilesOnTheTop("israel", out string outMessage);
         }
-
-        private void btnSaveLocation_Click(object sender, EventArgs e)
+         
+        private void button2_Click(object sender, EventArgs e)
         {
-           
+            if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text))
+            {
+                TileBlock s1 = mapControl1.HistoryBlocks[txtLocationName.Text];
+                if (mapControl1.ShowLatLon(s1.name, s1.zoom, s1.lat, s1.lon, 1, 1, out string outMessage) == false)
+                {
+                    string[] s = outMessage.Split(',');
+                    MessageBox.Show("Missing tiles: " + outMessage);
+                    if (s[0] == "Missing tiles")
+                    {
+                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                        if (d == DialogResult.Yes)
+                        {
+                            DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                        }
+                    }
+                }
+            }
         }
     }
 }
