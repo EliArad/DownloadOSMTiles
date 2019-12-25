@@ -14,16 +14,7 @@ namespace DownloadOSMTiles
     {
         string m_baseDir = "c:\\OSMTiles\\";
         bool m_initdone = false;
-
-        public enum DRAW_SHAPE
-        {
-            NONE,
-            LINE,
-            CIRCLE,
-            RECT,
-            TRIANGLE               
-        }
-
+ 
         public Form1()
         {
             InitializeComponent();
@@ -37,10 +28,7 @@ namespace DownloadOSMTiles
             MapMsgCallack p2 = new MapMsgCallack(MapMsgCallackFunc);
             mapControl1.SetCallback(p,p1,p2);
 
-            MouseHook.Start();
-            MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
-            MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
-            MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
+            mapControl1.LoadControl();
             mapControl1.LoadHistory("MyHistoryBlock.json");
         }
 
@@ -89,64 +77,8 @@ namespace DownloadOSMTiles
                 }
             }
         }
-
-        int m_lastMousex = 0;
-        int m_lastMousey = 0;
-        bool m_leftMouseDown = false;
-        private void LeftMouseDownEvent()
-        {           
-            m_leftMouseDown = true;           
-        }
-        private void LeftMouseUpEvent()
-        {
-            m_leftMouseDown = false;
-        }
-        private void RightMouseEvent()
-        {
-
-        }
-
-        private void MoveMouseEvent(POINT pt)
-        {
-            lblMouseXY.Text = pt.x + "," + pt.y;
-            if (m_leftMouseDown && ModifierKeys.HasFlag(Keys.Control))
-            {
-                if (pt.x < m_lastMousex)
-                {
-                    //Console.WriteLine("move to left" + pt.x + "," + pt.y);
-                    mapControl1.MoveLeft();
-                } else 
-                if (pt.x > m_lastMousex)
-                {
-                    //Console.WriteLine("move to right" + pt.x + "," + pt.y);
-                    mapControl1.MoveRight();
-                }
-                else
-                if (pt.y < m_lastMousey)
-                {
-                    mapControl1.MoveUp();
-                }
-                else
-                if (pt.y > m_lastMousey)
-                {
-                    mapControl1.MoveDown();
-                }
-            }
-            m_lastMousex = pt.x;
-            m_lastMousey = pt.y;
-
-            switch (m_drawShape)
-            {
-                case DRAW_SHAPE.LINE:
-                {
-                     mapControl1.DrawLine(pt, m_leftMouseDown);                    
-                }
-                break;
-            }
-
-
-        }
-        DRAW_SHAPE m_drawShape = DRAW_SHAPE.NONE;
+         
+       
         void MapMsgCallackFunc(int code, string msg)
         {
             switch (code)
@@ -713,7 +645,7 @@ namespace DownloadOSMTiles
 
         private void cmbDrawShape_SelectedIndexChanged(object sender, EventArgs e)
         {
-            m_drawShape = (DRAW_SHAPE)cmbDrawShape.SelectedIndex;
+            
         }
 
         private void showBorderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -735,7 +667,7 @@ namespace DownloadOSMTiles
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            mapControl1.AddRowTilesOnTheTop("israel", out string outMessage);
+            mapControl1.AddRowTilesOnTheLeft("israel", out string outMessage);
         }
          
         private void button2_Click(object sender, EventArgs e)

@@ -17,6 +17,14 @@ namespace DownloadOSMTiles
 {
     public partial class MapControl : UserControl
     {
+        public enum DRAW_SHAPE
+        {
+            NONE,
+            LINE,
+            CIRCLE,
+            RECT,
+            TRIANGLE
+        }
 
         const int RDW_INVALIDATE = 0x0001;
         const int RDW_ALLCHILDREN = 0x0080;
@@ -40,14 +48,24 @@ namespace DownloadOSMTiles
 
         int m_lastXTile = 0;
         int m_lastYTile = 0;
-
+        DRAW_SHAPE m_drawShape = DRAW_SHAPE.NONE;
         List<TileBlock> tilesBlock = new List<TileBlock>();
         List<MapPictureBox> m_allTiles = new List<MapPictureBox>();
         public MapControl()
         {
             InitializeComponent();
             this.DoubleBuffered = true;
+ 
         }
+	    public void LoadControl()
+	    {
+
+                MouseHook.Start();
+                MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
+                MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
+                MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
+
+	    }
         public bool LoadMapData(string mapfile, out string outMessage)
         {
             outMessage = string.Empty;
@@ -272,6 +290,7 @@ namespace DownloadOSMTiles
         int m_rightMostTile = 1111111;
         int m_topMostTile = 0;
         int m_bottomMostTile = 0;
+        int m_LeftMostTile = 0;
         bool m_missingTiles = false;
         private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
@@ -299,7 +318,7 @@ namespace DownloadOSMTiles
                     }
                 }
                 m_bottomMostTile = m_allTiles.Max(n => n.Bottom);
-                if (m_topMostTile > this.Bottom)
+                if (m_bottomMostTile < this.Bottom)
                 {
                     if (AddRowTilesOnTheBottom(m_allTiles[0].GetTileProp().name, out outMessage) == false)
                     {
@@ -308,7 +327,16 @@ namespace DownloadOSMTiles
                     }
                 }
 
-
+                m_LeftMostTile = m_allTiles.Min(n => n.Left);
+                if (m_LeftMostTile > 0)
+                {
+                    
+                    if (AddRowTilesOnTheLeft(m_allTiles[0].GetTileProp().name, out outMessage) == false)
+                    {
+                        m_missingTiles = true;
+                        pMapMsgCallack(8912, outMessage);
+                    }                    
+                }
             }
         }
 
@@ -509,16 +537,43 @@ namespace DownloadOSMTiles
             {
                 if (AddDynamicTiles(name,
                                 tilex + i,  // tilex
-                                tiley - 1,            // tiley
+                                tiley + 1,            // tiley
                                 m_allTiles[0].GetTileProp().zoom,  // zoom
                                 0 + i, //  mapx
                                 0,        // mapy
                                 leftMostTile + i * 256,    // locx
-                                bottomMostTile + 256,  // locy
+                                bottomMostTile,  // locy
                                 out outMessage) == false)
                     return false;
             }
             
+            return true;
+
+        }
+        public bool AddRowTilesOnTheLeft(string name, out string outMessage)
+        {
+            outMessage = string.Empty;
+            int tilex = m_allTiles.Min(n => n.GetTileProp().x);
+            int tiley = m_allTiles.Min(n => n.GetTileProp().y);
+
+             
+            int leftMostTile = m_allTiles.Min(n => n.Left);
+            int TopMostTile = m_allTiles.Min(n => n.Top);
+
+            for (int i = 0; i < MAX_TILES; i++)
+            {
+                if (AddDynamicTiles(name,
+                                tilex -1,  // tilex
+                                tiley + i,            // tiley
+                                m_allTiles[0].GetTileProp().zoom,  // zoom
+                                0 + i, //  mapx
+                                0,        // mapy
+                                leftMostTile - 256,    // locx
+                                TopMostTile + i * 256,  // locy
+                                out outMessage) == false)
+                    return false;
+            }
+
             return true;
 
         }
@@ -599,6 +654,62 @@ namespace DownloadOSMTiles
                 return false;
             }
         }
-         
+
+        int m_lastMousex = 0;
+        int m_lastMousey = 0;
+        bool m_leftMouseDown = false;
+        private void LeftMouseDownEvent()
+        {
+            m_leftMouseDown = true;
+        }
+        private void LeftMouseUpEvent()
+        {
+            m_leftMouseDown = false;
+        }
+        private void RightMouseEvent()
+        {
+
+        }
+
+        private void MoveMouseEvent(POINT pt)
+        {
+            
+            pMapMsgCallack(551, pt.x + "," + pt.y);
+            if (m_leftMouseDown && ModifierKeys.HasFlag(Keys.Control))
+            {
+                if (pt.x < m_lastMousex)
+                {
+                    //Console.WriteLine("move to left" + pt.x + "," + pt.y);
+                    MoveLeft();
+                }
+                else
+                if (pt.x > m_lastMousex)
+                {
+                    //Console.WriteLine("move to right" + pt.x + "," + pt.y);
+                    MoveRight();
+                }
+                else
+                if (pt.y < m_lastMousey)
+                {
+                    MoveUp();
+                }
+                else
+                if (pt.y > m_lastMousey)
+                {
+                    MoveDown();
+                }
+            }
+            m_lastMousex = pt.x;
+            m_lastMousey = pt.y;
+
+            switch (m_drawShape)
+            {
+                case DRAW_SHAPE.LINE:
+                {
+                    DrawLine(pt, m_leftMouseDown);
+                }
+                break;
+            } 
+        }
     }
 }
