@@ -19,8 +19,9 @@ namespace DownloadOSMTiles
         {
             
             this.Paint += MapPictureBox_Paint;
-           
-            SizeMode = PictureBoxSizeMode.Normal;
+
+            //SizeMode = PictureBoxSizeMode.Normal;
+            this.InitialImage = null;
             m_x = x;
             m_y = y;
             m_tileNumber = tileNumber;
@@ -53,6 +54,15 @@ namespace DownloadOSMTiles
         public TileBlock GetTileProp()
         {
             return tileBlock;
+        }
+
+        private void InitializeComponent()
+        {
+            ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
+            this.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
+            this.ResumeLayout(false);
+
         }
 
         private void MapPictureBox_Paint(object sender, PaintEventArgs e)

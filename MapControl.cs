@@ -61,10 +61,10 @@ namespace DownloadOSMTiles
 	    public void LoadControl()
 	    {
 
-                MouseHook.Start();
-                MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
-                MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
-                MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
+            MouseHook.Start();
+            MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
+            MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
+            MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
 
 	    }
         public bool LoadMapData(string mapfile, out string outMessage)
@@ -112,7 +112,10 @@ namespace DownloadOSMTiles
                                 out int pixelX,
                                 out int pixelY,
                                 out int tilex,
-                                out int tiley)
+                                out int tiley,
+                                out int pixelX_Excact,
+                                out int pixelY_Excact)
+
         {
             double MinLatitude = -85.05112878f;
             double MaxLatitude = 85.05112878f;
@@ -130,6 +133,9 @@ namespace DownloadOSMTiles
             tiley = (int)(Math.Truncate(Y));
             pixelX = tilex * 256;
             pixelY = tiley * 256;
+
+            pixelX_Excact = (int)(ClipByRange((tilex * 256) + ((X - tilex) * 256), mapSize - 1));
+            pixelY_Excact = (int)(ClipByRange((tiley * 256) + ((Y - tiley) * 256), mapSize - 1));
         }
          
         int m_startx;
@@ -139,18 +145,26 @@ namespace DownloadOSMTiles
 
         public bool ShowLatLon(string name, int zoom, double lat, double lon, int mapX, int mapY, out string outMessage)
         {
+            int pixelX_Excact;
+            int pixelY_Excact;
+
             LatLongToPixelXYOSM(lat, lon, zoom,
                                 out int pixelX,
                                 out int pixelY,
                                 out int tilex,
-                                out int tiley);
+                                out int tiley,
+                                out  pixelX_Excact,
+                                out  pixelY_Excact);
 
+            
 
             int x = 0;
             int y = 0;
             m_allTiles.Clear();
             this.Controls.Clear();
             outMessage = string.Empty;
+            int lastCurrentPixelX = m_currentPixelX;
+            int lastCurrentPixelY = m_currentPixelY;
 
             // draw selected tile 
             //if (AddMapTile(name, tilex, tiley, zoom, mapX, mapY,  out outMessage) == false)
@@ -183,12 +197,33 @@ namespace DownloadOSMTiles
                     return false;
             }
 
+
+            Application.DoEvents();
+            Thread.Sleep(0);
+            Application.DoEvents();
+            while (lastCurrentPixelX == m_currentPixelX || lastCurrentPixelY == m_currentPixelY)
+            {
+                Thread.Sleep(0);
+                Application.DoEvents();
+            }
+
+            for (int i = 0; i < m_allTiles.Count; i++)
+            {
+                m_allTiles[i].Left -= pixelX_Excact - m_currentPixelX;
+                m_allTiles[i].Top -= pixelY_Excact - m_currentPixelY;
+            }
+             
+            
             m_lastXTile = MAX_TILES;
             m_lastYTile = MAX_TILES;
 
-
             return true;
         }
+        [DllImport("user32.dll")]
+        static extern bool SetCursorPos(int X, int Y);
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+
 
         bool AddMapTileByLocation(string name, int tilex, int tiley, int zoom, int mapX, int mapY, out string outMessage)
         {
@@ -260,7 +295,9 @@ namespace DownloadOSMTiles
                                 out int pixelX,
                                 out int pixelY,
                                 out int tilex,
-                                out int tiley);
+                                out int tiley,
+                                out int pixelX_Excact,
+                                out int pixelY_Excact);
 
 
             int x = 0;
@@ -327,11 +364,18 @@ namespace DownloadOSMTiles
         int m_bottomMostTile = 0;
         int m_LeftMostTile = 0;
         bool m_missingTiles = false;
+        MapPictureBox pbCurrent;
+        int m_currentPixelX;
+        int m_currentPixelY;
+        int m_lastMouseTileX;
         private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
-            
-            MapPictureBox pb = (MapPictureBox)sender;
-            pMapControlCallback(pb.tileBlock, 1, e.X, e.Y);
+
+            pbCurrent = (MapPictureBox)sender;
+            m_lastMouseTileX = e.X;
+            m_currentPixelX = pbCurrent.GetTileProp().pixelx + e.X;
+            m_currentPixelY = pbCurrent.GetTileProp().pixely + e.Y;           
+            pMapControlCallback(pbCurrent.tileBlock, 1, e.X, e.Y);
             if (m_missingTiles == false)
             {
                 string outMessage;

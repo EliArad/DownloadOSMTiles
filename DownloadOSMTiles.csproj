@@ -75,6 +75,9 @@
     <EmbeddedResource Include="MapControl.resx">
       <DependentUpon>MapControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MapPictureBox.resx">
+      <DependentUpon>MapPictureBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
