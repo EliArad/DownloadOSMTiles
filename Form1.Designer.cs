@@ -72,11 +72,10 @@
             this.showXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showBorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblMouseXY = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.txtLocationName = new System.Windows.Forms.TextBox();
-            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
+            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -126,7 +125,7 @@
             // 
             this.txtCreateLon.Location = new System.Drawing.Point(71, 71);
             this.txtCreateLon.Name = "txtCreateLon";
-            this.txtCreateLon.Size = new System.Drawing.Size(100, 20);
+            this.txtCreateLon.Size = new System.Drawing.Size(67, 20);
             this.txtCreateLon.TabIndex = 7;
             this.txtCreateLon.Text = "34.4";
             // 
@@ -143,7 +142,7 @@
             this.groupBox1.Controls.Add(this.txtCreateLon);
             this.groupBox1.Location = new System.Drawing.Point(18, 21);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(242, 163);
+            this.groupBox1.Size = new System.Drawing.Size(210, 163);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -165,13 +164,13 @@
             this.cmbZoom2.FormattingEnabled = true;
             this.cmbZoom2.Location = new System.Drawing.Point(68, 106);
             this.cmbZoom2.Name = "cmbZoom2";
-            this.cmbZoom2.Size = new System.Drawing.Size(103, 21);
+            this.cmbZoom2.Size = new System.Drawing.Size(70, 21);
             this.cmbZoom2.TabIndex = 16;
             this.cmbZoom2.SelectedIndexChanged += new System.EventHandler(this.cmbZoom2_SelectedIndexChanged);
             // 
             // btnGo
             // 
-            this.btnGo.Location = new System.Drawing.Point(177, 45);
+            this.btnGo.Location = new System.Drawing.Point(144, 45);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(59, 44);
             this.btnGo.TabIndex = 15;
@@ -210,7 +209,7 @@
             // 
             this.txtCreateName.Location = new System.Drawing.Point(71, 19);
             this.txtCreateName.Name = "txtCreateName";
-            this.txtCreateName.Size = new System.Drawing.Size(100, 20);
+            this.txtCreateName.Size = new System.Drawing.Size(67, 20);
             this.txtCreateName.TabIndex = 9;
             this.txtCreateName.Text = "israel";
             // 
@@ -218,7 +217,7 @@
             // 
             this.txtCreateLat.Location = new System.Drawing.Point(71, 45);
             this.txtCreateLat.Name = "txtCreateLat";
-            this.txtCreateLat.Size = new System.Drawing.Size(100, 20);
+            this.txtCreateLat.Size = new System.Drawing.Size(67, 20);
             this.txtCreateLat.TabIndex = 8;
             this.txtCreateLat.Text = "33.4";
             // 
@@ -393,7 +392,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(207, 577);
+            this.button5.Location = new System.Drawing.Point(18, 651);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(129, 23);
             this.button5.TabIndex = 26;
@@ -412,7 +411,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(207, 296);
+            this.button6.Location = new System.Drawing.Point(15, 680);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(108, 28);
             this.button6.TabIndex = 16;
@@ -494,42 +493,21 @@
             this.lblMouseXY.AutoSize = true;
             this.lblMouseXY.Location = new System.Drawing.Point(1562, 760);
             this.lblMouseXY.Name = "lblMouseXY";
-            this.lblMouseXY.Size = new System.Drawing.Size(41, 13);
+            this.lblMouseXY.Size = new System.Drawing.Size(13, 13);
             this.lblMouseXY.TabIndex = 31;
-            this.lblMouseXY.Text = "label14";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(239, 231);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 32;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            this.lblMouseXY.Text = "..";
             // 
             // txtLocationName
             // 
-            this.txtLocationName.Location = new System.Drawing.Point(207, 358);
+            this.txtLocationName.Location = new System.Drawing.Point(18, 288);
             this.txtLocationName.Name = "txtLocationName";
             this.txtLocationName.Size = new System.Drawing.Size(100, 20);
             this.txtLocationName.TabIndex = 33;
             // 
-            // mapControl1
-            // 
-            this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mapControl1.BackColor = System.Drawing.Color.LightSkyBlue;
-            this.mapControl1.Location = new System.Drawing.Point(369, 3);
-            this.mapControl1.Name = "mapControl1";
-            this.mapControl1.Size = new System.Drawing.Size(1234, 751);
-            this.mapControl1.TabIndex = 4;
-            // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(207, 339);
+            this.label14.Location = new System.Drawing.Point(18, 269);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(86, 13);
             this.label14.TabIndex = 34;
@@ -537,13 +515,24 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(313, 356);
+            this.button2.Location = new System.Drawing.Point(124, 286);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(50, 23);
             this.button2.TabIndex = 35;
             this.button2.Text = "Load";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // mapControl1
+            // 
+            this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mapControl1.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.mapControl1.Location = new System.Drawing.Point(234, 3);
+            this.mapControl1.Name = "mapControl1";
+            this.mapControl1.Size = new System.Drawing.Size(1369, 751);
+            this.mapControl1.TabIndex = 4;
             // 
             // Form1
             // 
@@ -553,7 +542,6 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.txtLocationName);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.lblMouseXY);
             this.Controls.Add(this.cmbDrawShape);
             this.Controls.Add(this.button7);
@@ -648,7 +636,6 @@
         private System.Windows.Forms.Label lblMouseXY;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbZoom2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtLocationName;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button button2;

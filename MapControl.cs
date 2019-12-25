@@ -12,6 +12,7 @@ using static DownloadOSMTiles.MouseHook;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace DownloadOSMTiles
 {
@@ -144,7 +145,7 @@ namespace DownloadOSMTiles
                                 out int tilex,
                                 out int tiley);
 
-            
+
             int x = 0;
             int y = 0;
             m_allTiles.Clear();
@@ -153,7 +154,7 @@ namespace DownloadOSMTiles
 
             // draw selected tile 
             //if (AddMapTile(name, tilex, tiley, zoom, mapX, mapY,  out outMessage) == false)
-               // return false;
+            // return false;
 
             // draw all x until y
             for (int j = 0; j < mapY; j++)
@@ -175,10 +176,10 @@ namespace DownloadOSMTiles
                 }
             }
 
-             
+
             for (int i = 0; i < MAX_TILES; i++)
             {
-                if (AddMapTile(name, tilex - mapX + i, tiley , zoom, i, mapY, out outMessage) == false)
+                if (AddMapTile(name, tilex - mapX + i, tiley, zoom, i, mapY, out outMessage) == false)
                     return false;
             }
 
@@ -188,6 +189,39 @@ namespace DownloadOSMTiles
 
             return true;
         }
+
+        bool AddMapTileByLocation(string name, int tilex, int tiley, int zoom, int mapX, int mapY, out string outMessage)
+        {
+            outMessage = string.Empty;
+            // Add Center Tile:            
+            var q = (from ll in tilesBlock
+                     where ll.name.ToLower() == name.ToLower() && ll.zoom == zoom &&
+                     ll.x == (tilex) && ll.y == (tiley)
+                     select ll).ToList();
+
+            if (q.Count == 0)
+            {
+                outMessage = "Missing tiles," + (tilex) + "," + (tiley) + "," + zoom;
+                return false;
+            }
+            if (q.Count > 1)
+            {
+                outMessage = "Error : Found 2 tiles for," + (tilex) + "," + (tiley) + "," + zoom;
+                return false;
+            }
+
+            TileBlock r = q.SingleOrDefault();
+            MapPictureBox b;
+
+            b = AddTileByLocation(0,0,mapX, mapY, r.fileName);
+
+            m_allTiles.Add(b);
+
+            b.tileBlock = r;
+            this.Controls.Add(b);
+            return true;
+        }
+
         bool AddMapTile(string name, int tilex , int tiley, int zoom, int mapX, int mapY, out string outMessage)
         {
             outMessage = string.Empty;
@@ -219,7 +253,7 @@ namespace DownloadOSMTiles
             this.Controls.Add(b);
             return true;
         }
-
+         
         public bool ShowLatLon(string name, int zoom, double lat, double lon, out string outMessage)
         {
             LatLongToPixelXYOSM(lat, lon, zoom,
@@ -230,9 +264,10 @@ namespace DownloadOSMTiles
 
 
             int x = 0;
-            int y = 0;
-            m_allTiles.Clear();
+            int y = 0;           
             this.Controls.Clear();
+            m_allTiles.Clear();
+           
             outMessage = string.Empty;
             for (int j = 0; j < MAX_TILES; j++)
             {
@@ -259,7 +294,6 @@ namespace DownloadOSMTiles
                     MapPictureBox b;
 
                     b = AddTile(x, y, r.fileName);
-
                     m_allTiles.Add(b);
 
                     b.tileBlock = r;
@@ -270,6 +304,7 @@ namespace DownloadOSMTiles
             }
             m_lastXTile = MAX_TILES;
             m_lastYTile = MAX_TILES;
+            
             return true;
         }
          
@@ -294,6 +329,7 @@ namespace DownloadOSMTiles
         bool m_missingTiles = false;
         private void Pb_MouseMove(object sender, MouseEventArgs e)
         {
+            
             MapPictureBox pb = (MapPictureBox)sender;
             pMapControlCallback(pb.tileBlock, 1, e.X, e.Y);
             if (m_missingTiles == false)
@@ -669,6 +705,11 @@ namespace DownloadOSMTiles
         private void RightMouseEvent()
         {
 
+        }
+
+        public void DrawShape(DRAW_SHAPE s)
+        {
+            m_drawShape = s;
         }
 
         private void MoveMouseEvent(POINT pt)

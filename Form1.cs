@@ -83,6 +83,11 @@ namespace DownloadOSMTiles
         {
             switch (code)
             {
+                case 551:
+                {
+                    lblMouseXY.Text = msg;
+                }
+                break;
                 case 8912:
                 {
                     string[] s = msg.Split(',');
@@ -115,6 +120,7 @@ namespace DownloadOSMTiles
                         if (d == DialogResult.Yes)
                         {
                             DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                            return;
                         }
                     }
                 }
@@ -135,6 +141,7 @@ namespace DownloadOSMTiles
                         if (d == DialogResult.Yes)
                         {
                             DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                            return;
                         }
                     }
                 }
@@ -143,6 +150,8 @@ namespace DownloadOSMTiles
                     cmbZoom.Text = (tb.zoom - 1).ToString();
                 }
             }
+            mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
+            mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
         }
         double m_latitude;
         double m_longitude;
@@ -542,9 +551,12 @@ namespace DownloadOSMTiles
                     if (d == DialogResult.Yes)
                     {
                         DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                        return;
                     }
                 }
             }
+            mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
+            mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -645,7 +657,7 @@ namespace DownloadOSMTiles
 
         private void cmbDrawShape_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+            mapControl1.DrawShape((DRAW_SHAPE)cmbDrawShape.SelectedIndex);
         }
 
         private void showBorderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -685,9 +697,12 @@ namespace DownloadOSMTiles
                         if (d == DialogResult.Yes)
                         {
                             DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                            return;
                         }
                     }
                 }
+                mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
+                mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
             }
         }
     }

@@ -19,8 +19,7 @@ namespace DownloadOSMTiles
         {
             
             this.Paint += MapPictureBox_Paint;
-            
-         
+           
             SizeMode = PictureBoxSizeMode.Normal;
             m_x = x;
             m_y = y;
