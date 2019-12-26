@@ -76,6 +76,7 @@
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.mapControl1 = new DownloadOSMTiles.MapControl();
+            this.snapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -460,6 +461,8 @@
             // 
             // optionsToolStripMenuItem
             // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.snapshotToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -533,6 +536,13 @@
             this.mapControl1.Name = "mapControl1";
             this.mapControl1.Size = new System.Drawing.Size(1369, 751);
             this.mapControl1.TabIndex = 4;
+            // 
+            // snapshotToolStripMenuItem
+            // 
+            this.snapshotToolStripMenuItem.Name = "snapshotToolStripMenuItem";
+            this.snapshotToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.snapshotToolStripMenuItem.Text = "Snapshot";
+            this.snapshotToolStripMenuItem.Click += new System.EventHandler(this.snapshotToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -639,6 +649,7 @@
         private System.Windows.Forms.TextBox txtLocationName;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ToolStripMenuItem snapshotToolStripMenuItem;
     }
 }
 

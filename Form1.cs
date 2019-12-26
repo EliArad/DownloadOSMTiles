@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Windows.Forms;
 using static DownloadOSMTiles.MapControl;
-using static DownloadOSMTiles.MouseHook;
+ 
 
 namespace DownloadOSMTiles
 {
@@ -704,6 +705,16 @@ namespace DownloadOSMTiles
                 mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
                 mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
             }
+        }
+
+        private void snapshotToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            ScreenCapturer c = new ScreenCapturer(mapControl1.Left, mapControl1.Top, mapControl1.Width, mapControl1.Height);
+            Bitmap result = c.Capture();
+            result.Save("test.jpg", ImageFormat.Jpeg);
+            System.Diagnostics.Process.Start("test.jpg");
+            
         }
     }
 }
