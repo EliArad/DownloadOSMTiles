@@ -75,8 +75,8 @@
             this.txtLocationName = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.snapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -106,9 +106,9 @@
             this.cmbZoom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbZoom.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbZoom.FormattingEnabled = true;
-            this.cmbZoom.Location = new System.Drawing.Point(413, 760);
+            this.cmbZoom.Location = new System.Drawing.Point(67, 754);
             this.cmbZoom.Name = "cmbZoom";
-            this.cmbZoom.Size = new System.Drawing.Size(121, 21);
+            this.cmbZoom.Size = new System.Drawing.Size(56, 21);
             this.cmbZoom.TabIndex = 5;
             this.cmbZoom.SelectedIndexChanged += new System.EventHandler(this.cmbZoom_SelectedIndexChanged);
             // 
@@ -116,7 +116,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(362, 760);
+            this.label1.Location = new System.Drawing.Point(11, 757);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 6;
@@ -422,8 +422,8 @@
             // 
             // button7
             // 
-            this.button7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button7.Location = new System.Drawing.Point(891, 757);
+            this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button7.Location = new System.Drawing.Point(12, 720);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(75, 23);
             this.button7.TabIndex = 28;
@@ -433,7 +433,7 @@
             // 
             // cmbDrawShape
             // 
-            this.cmbDrawShape.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cmbDrawShape.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbDrawShape.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDrawShape.FormattingEnabled = true;
             this.cmbDrawShape.Items.AddRange(new object[] {
@@ -442,9 +442,9 @@
             "Circle",
             "Rectangle",
             "Triangle"});
-            this.cmbDrawShape.Location = new System.Drawing.Point(983, 757);
+            this.cmbDrawShape.Location = new System.Drawing.Point(104, 720);
             this.cmbDrawShape.Name = "cmbDrawShape";
-            this.cmbDrawShape.Size = new System.Drawing.Size(121, 21);
+            this.cmbDrawShape.Size = new System.Drawing.Size(79, 21);
             this.cmbDrawShape.TabIndex = 29;
             this.cmbDrawShape.SelectedIndexChanged += new System.EventHandler(this.cmbDrawShape_SelectedIndexChanged);
             // 
@@ -492,9 +492,9 @@
             // 
             // lblMouseXY
             // 
-            this.lblMouseXY.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.lblMouseXY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMouseXY.AutoSize = true;
-            this.lblMouseXY.Location = new System.Drawing.Point(1562, 760);
+            this.lblMouseXY.Location = new System.Drawing.Point(170, 762);
             this.lblMouseXY.Name = "lblMouseXY";
             this.lblMouseXY.Size = new System.Drawing.Size(13, 13);
             this.lblMouseXY.TabIndex = 31;
@@ -526,6 +526,13 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // snapshotToolStripMenuItem
+            // 
+            this.snapshotToolStripMenuItem.Name = "snapshotToolStripMenuItem";
+            this.snapshotToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.snapshotToolStripMenuItem.Text = "Snapshot";
+            this.snapshotToolStripMenuItem.Click += new System.EventHandler(this.snapshotToolStripMenuItem_Click);
+            // 
             // mapControl1
             // 
             this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -534,15 +541,9 @@
             this.mapControl1.BackColor = System.Drawing.Color.LightSkyBlue;
             this.mapControl1.Location = new System.Drawing.Point(234, 3);
             this.mapControl1.Name = "mapControl1";
-            this.mapControl1.Size = new System.Drawing.Size(1369, 751);
+            this.mapControl1.Size = new System.Drawing.Size(1369, 780);
             this.mapControl1.TabIndex = 4;
-            // 
-            // snapshotToolStripMenuItem
-            // 
-            this.snapshotToolStripMenuItem.Name = "snapshotToolStripMenuItem";
-            this.snapshotToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.snapshotToolStripMenuItem.Text = "Snapshot";
-            this.snapshotToolStripMenuItem.Click += new System.EventHandler(this.snapshotToolStripMenuItem_Click);
+            this.mapControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.mapControl1_DragEnter);
             // 
             // Form1
             // 

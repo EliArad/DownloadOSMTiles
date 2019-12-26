@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Threading;
+using System.Drawing.Imaging;
 
 namespace DownloadOSMTiles
 {
@@ -65,8 +66,37 @@ namespace DownloadOSMTiles
             MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
             MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
             MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
+            
+            /*
+            Bitmap b = new Bitmap(@"images.jfif");
+            pictureBox1.Image = b;
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.MouseDown += PictureBox1_MouseDown;
+            this.DragEnter += MapControl_DragEnter;
+            this.DragDrop += MapControl_DragDrop;
+            this.AllowDrop = true;
+            */
+        }
 
-	    }
+        private void MapControl_DragDrop(object sender, DragEventArgs e)
+        {
+            pictureBox1.Left = m_lastMousex - this.Left;
+            pictureBox1.Top = m_lastMousey - this.Top;
+        }
+
+        private void MapControl_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Text))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            pictureBox1.DoDragDrop(pictureBox1.Left.ToString(), DragDropEffects.Copy);
+        }
+
         public bool LoadMapData(string mapfile, out string outMessage)
         {
             outMessage = string.Empty;
@@ -754,6 +784,13 @@ namespace DownloadOSMTiles
         public void DrawShape(DRAW_SHAPE s)
         {
             m_drawShape = s;
+        }
+        public Bitmap SnapshotMap(string fileName)
+        {
+            ScreenCapturer c = new ScreenCapturer(this.Left, this.Top, this.Width, this.Height);
+            Bitmap result = c.Capture();
+            result.Save(fileName, ImageFormat.Jpeg);
+            return result;
         }
 
         private void MoveMouseEvent(POINT pt)

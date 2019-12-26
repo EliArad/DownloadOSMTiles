@@ -24,6 +24,8 @@ namespace DownloadOSMTiles
             this.KeyUp += Form1_KeyUp;
             Directory.CreateDirectory(m_baseDir);
 
+             
+
             MapControlCallback p = new MapControlCallback(MapControlCallbackMsg);
             MapControlZoomCallback p1 = new MapControlZoomCallback(MapControlZoomCallbackMsg);
             MapMsgCallack p2 = new MapMsgCallack(MapMsgCallackFunc);
@@ -710,11 +712,14 @@ namespace DownloadOSMTiles
         private void snapshotToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            ScreenCapturer c = new ScreenCapturer(mapControl1.Left, mapControl1.Top, mapControl1.Width, mapControl1.Height);
-            Bitmap result = c.Capture();
-            result.Save("test.jpg", ImageFormat.Jpeg);
-            System.Diagnostics.Process.Start("test.jpg");
-            
+            mapControl1.SnapshotMap("map_capture.jpg");
+            System.Diagnostics.Process.Start("map_capture.jpg");
+
+        }
+
+        private void mapControl1_DragEnter(object sender, DragEventArgs e)
+        {
+
         }
     }
 }
