@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace DownloadOSMTiles
 {
@@ -24,6 +25,7 @@ namespace DownloadOSMTiles
             NONE,
             LINE,
             CIRCLE,
+            CIRCLE_FILL,
             RECT,
             TRIANGLE
         }
@@ -56,45 +58,60 @@ namespace DownloadOSMTiles
         public MapControl()
         {
             InitializeComponent();
+            Control.CheckForIllegalCrossThreadCalls = false;
             this.DoubleBuffered = true;
  
         }
 	    public void LoadControl()
-	    {
+	    { 
 
-            MouseHook.Start();
+           
             MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
             MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
             MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
-            
-            /*
-            Bitmap b = new Bitmap(@"images.jfif");
-            pictureBox1.Image = b;
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.MouseDown += PictureBox1_MouseDown;
-            this.DragEnter += MapControl_DragEnter;
-            this.DragDrop += MapControl_DragDrop;
-            this.AllowDrop = true;
-            */
+             
+             
+        } 
+
+        public void Start()
+        {
+            MouseHook.Start();
+        }
+        public void Stop()
+        {
+            MouseHook.Stop();
         }
 
-        private void MapControl_DragDrop(object sender, DragEventArgs e)
+
+        Panel m_panel;
+        PictureBox pictureBox1;
+        List<PictureBox> m_allPB = new List<PictureBox>();
+       
+        public void AddBitmap()
         {
-            pictureBox1.Left = m_lastMousex - this.Left;
-            pictureBox1.Top = m_lastMousey - this.Top;
+            AllowDrop = true;
+            PictureBox p = new PictureBox();
+
+            p.Location = new System.Drawing.Point(316, 258);
+            p.Name = "pictureBox1";
+            p.Size = new System.Drawing.Size(100, 50);
+            p.TabIndex = 2;
+            p.TabStop = false;
+            p.ImageLocation = "images.jfif";
+            p.SizeMode = PictureBoxSizeMode.StretchImage;
+            Controls.Add(p);
+            p.BringToFront();
+           
+            p.AllowDrop = true;
+            m_allPB.Add(p);
         }
 
-        private void MapControl_DragEnter(object sender, DragEventArgs e)
+        public void MoveBitmap()
         {
-            if (e.Data.GetDataPresent(DataFormats.Text))
-                e.Effect = DragDropEffects.Copy;
-            else
-                e.Effect = DragDropEffects.None;
-        }
-
-        private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            pictureBox1.DoDragDrop(pictureBox1.Left.ToString(), DragDropEffects.Copy);
+             for(int i = 0; i < 500; i++)
+             {
+                m_allPB[0].Left = this.Left + i * 2;                   
+             }
         }
 
         public bool LoadMapData(string mapfile, out string outMessage)
@@ -371,7 +388,8 @@ namespace DownloadOSMTiles
             }
             m_lastXTile = MAX_TILES;
             m_lastYTile = MAX_TILES;
-            
+             
+
             return true;
         }
          
@@ -551,6 +569,42 @@ namespace DownloadOSMTiles
         }
         POINT m_lastDrawLinePoint;
         
+        public void DrawCircle(POINT pt, int radius,Color color, bool draw)
+        {
+             
+            if (draw)
+            {
+                IntPtr hdc = GetWindowDC(this.Handle);
+                Graphics g = Graphics.FromHdc(hdc);
+                Pen pen = new Pen(color);
+
+                g.DrawEllipse(pen, pt.x - this.Left, pt.y - this.Top - 20,
+                              radius + radius, radius + radius);
+                 
+                 
+                g.Dispose();
+                ReleaseDC(this.Handle, hdc);
+            } 
+           
+        }
+
+        void DrawFillCircle(POINT pt, int radius, Color color, bool draw)
+        {
+            if (draw)
+            {
+                IntPtr hdc = GetWindowDC(this.Handle);
+                Graphics g = Graphics.FromHdc(hdc);
+                Pen pen = new Pen(color);
+                SolidBrush brush = new SolidBrush(color);
+                g.FillEllipse(brush, pt.x - this.Left, pt.y - this.Top - 20,
+                            radius + radius, radius + radius);
+
+                g.Dispose();
+                ReleaseDC(this.Handle, hdc);
+            }
+
+
+        }
         public void DrawLine(POINT pt, bool draw)
         {
             if (draw)
@@ -566,10 +620,24 @@ namespace DownloadOSMTiles
             }
             m_lastDrawLinePoint = pt;
         }
+        [DllImport("user32")]
+        private static extern bool InvalidateRect(IntPtr hwnd, IntPtr rect, bool bErase);
         public void RedrawWindow()
         {
+            //InvalidateRect(IntPtr.Zero, IntPtr.Zero, true);
             RedrawWindow(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+            ////RedrawWindow(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, RDW_UPDATENOW);
+
         }
+      
+        public void ShowPixelXY(bool show)
+        {
+            foreach (MapPictureBox m in m_allTiles)
+            {
+                m.DrawPixelXY(show);
+            }
+        }
+
         public void ShowXY(bool show)
         {
             foreach (MapPictureBox m in m_allTiles)
@@ -795,7 +863,8 @@ namespace DownloadOSMTiles
 
         private void MoveMouseEvent(POINT pt)
         {
-            
+             
+
             pMapMsgCallack(551, pt.x + "," + pt.y);
             if (m_leftMouseDown && ModifierKeys.HasFlag(Keys.Control))
             {
@@ -830,8 +899,56 @@ namespace DownloadOSMTiles
                 {
                     DrawLine(pt, m_leftMouseDown);
                 }
-                break;
+                break;                 
             } 
         }
+
+          
+        private void lineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lineToolStripMenuItem.Checked = !lineToolStripMenuItem.Checked;
+            if (lineToolStripMenuItem.Checked)
+                m_drawShape = DRAW_SHAPE.LINE;
+        }
+
+        private void noneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_drawShape = DRAW_SHAPE.NONE;
+        }
+
+        private void circleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_drawShape = DRAW_SHAPE.CIRCLE;
+        }
+
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_drawShape = DRAW_SHAPE.RECT;
+        }
+
+        private void triangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_drawShape = DRAW_SHAPE.TRIANGLE;
+        }
+
+        private void fillColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_drawShape = DRAW_SHAPE.CIRCLE_FILL;
+        }
+        const int SRCCOPY = 0xcc0020; // we want to copy an in memory image
+
+        [System.Runtime.InteropServices.DllImportAttribute("gdi32.dll")]
+        private static extern int BitBlt(
+          IntPtr hdcDest,     // handle to destination DC (device context)
+          int nXDest,         // x-coord of destination upper-left corner
+          int nYDest,         // y-coord of destination upper-left corner
+          int nWidth,         // width of destination rectangle
+          int nHeight,        // height of destination rectangle
+          IntPtr hdcSrc,      // handle to source DC
+          int nXSrc,          // x-coordinate of source upper-left corner
+          int nYSrc,          // y-coordinate of source upper-left corner
+          System.Int32 dwRop  // raster operation code
+          );
+
     }
 }

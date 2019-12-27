@@ -18,14 +18,21 @@ namespace DownloadOSMTiles
         public static event EventX2Handler RightMouseAction = delegate { };
         public static event EventXHandler MoveMouseAction = delegate { };
 
+        static bool m_hooked = false;
         public static void Start()
         {
-            _hookID = SetHook(_proc);
+            
+            if (m_hooked == false)
+                _hookID = SetHook(_proc);
+            m_hooked = true;
+             
 
         }
         public static void Stop()
         {
-            UnhookWindowsHookEx(_hookID);
+            if (m_hooked == true)
+                UnhookWindowsHookEx(_hookID);
+            m_hooked = false;
         }
 
         private static LowLevelMouseProc _proc = HookCallback;

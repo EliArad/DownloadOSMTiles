@@ -4,16 +4,17 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using static DownloadOSMTiles.MapControl;
- 
+using static DownloadOSMTiles.MouseHook;
 
 namespace DownloadOSMTiles
 {
     public partial class Form1 : Form
     {
-        string m_baseDir = "c:\\OSMTiles\\";
+        string m_baseDir = "d:\\OSMTiles\\";
         bool m_initdone = false;
  
         public Form1()
@@ -23,9 +24,7 @@ namespace DownloadOSMTiles
             KeyPreview = true;
             this.KeyUp += Form1_KeyUp;
             Directory.CreateDirectory(m_baseDir);
-
-             
-
+ 
             MapControlCallback p = new MapControlCallback(MapControlCallbackMsg);
             MapControlZoomCallback p1 = new MapControlZoomCallback(MapControlZoomCallbackMsg);
             MapMsgCallack p2 = new MapMsgCallack(MapMsgCallackFunc);
@@ -33,6 +32,24 @@ namespace DownloadOSMTiles
 
             mapControl1.LoadControl();
             mapControl1.LoadHistory("MyHistoryBlock.json");
+            this.MouseEnter += Form1_MouseEnter;
+            this.MouseLeave += Form1_MouseLeave;
+        }
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+        private void Form1_MouseLeave(object sender, EventArgs e)
+        {
+            POINT lpPoint;
+            GetCursorPos(out lpPoint);
+
+            if (lpPoint.x > (mapControl1.Left - 20))
+              mapControl1.Start();
+        }
+
+        private void Form1_MouseEnter(object sender, EventArgs e)
+        {
+          
+            mapControl1.Stop();
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
@@ -419,9 +436,16 @@ namespace DownloadOSMTiles
         
         private void button3_Click(object sender, EventArgs e)
         {
-            tilesBlock = new List<TileBlock>();
+            if (txtCreateName.Text == string.Empty)
+            {
+                MessageBox.Show("Please select area");
+                return;
+            }
+            string area = txtCreateName.Text;
 
-            foreach (string file in Directory.EnumerateFiles(m_baseDir, "*.png", SearchOption.AllDirectories))
+            tilesBlock = new List<TileBlock>();
+          
+            foreach (string file in Directory.EnumerateFiles(m_baseDir + area, "*.png", SearchOption.AllDirectories))
             {
                 string[] fileparts = file.Split('_');                
                 string [] s = fileparts[0].Split(Path.DirectorySeparatorChar);
@@ -438,11 +462,11 @@ namespace DownloadOSMTiles
                 tilesBlock.Add(t);
 
             }
-            TileDB db = new TileDB("tiles_lat_lon_db.json");         
+            TileDB db = new TileDB(m_baseDir   + area + "\\tiles_lat_lon_db.json");         
             db.Save(tilesBlock);
             MessageBox.Show("Created");
 
-            if (mapControl1.LoadMapData("tiles_lat_lon_db.json", out string outMessage) == true)
+            if (mapControl1.LoadMapData(m_baseDir  + area + "\\tiles_lat_lon_db.json", out string outMessage) == true)
             {
                 //mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
                 m_initdone = true;
@@ -480,8 +504,8 @@ namespace DownloadOSMTiles
             }
             cmbZoom.Text = "9";
             cmbZoom2.Text = "9";
-
-            if (mapControl1.LoadMapData("tiles_lat_lon_db.json", out string outMessage) == true)
+            string area = txtCreateName.Text;
+            if (mapControl1.LoadMapData(m_baseDir  + area + "\\tiles_lat_lon_db.json", out string outMessage) == true)
             {
                 //mapControl1.ShowLatLon(txtCreateName.Text, int.Parse(cmbZoom.Text));
                 m_initdone = true;
@@ -560,6 +584,7 @@ namespace DownloadOSMTiles
             }
             mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
             mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
+
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -716,10 +741,24 @@ namespace DownloadOSMTiles
             System.Diagnostics.Process.Start("map_capture.jpg");
 
         }
-
-        private void mapControl1_DragEnter(object sender, DragEventArgs e)
+         
+        private void addAirplainToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+            mapControl1.AddBitmap();
+
+            var t = new Thread(() =>
+            {
+                mapControl1.MoveBitmap();
+            });
+            t.Start();
+
+        }
+
+        private void showPixelXYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showPixelXYToolStripMenuItem.Checked = !showPixelXYToolStripMenuItem.Checked;
+            mapControl1.ShowPixelXY(showPixelXYToolStripMenuItem.Checked);
         }
     }
 }

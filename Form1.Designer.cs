@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.cmbZoom = new System.Windows.Forms.ComboBox();
@@ -68,15 +69,18 @@
             this.cmbDrawShape = new System.Windows.Forms.ComboBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.snapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showBorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.objectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addAirplainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblMouseXY = new System.Windows.Forms.Label();
             this.txtLocationName = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.snapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapControl1 = new DownloadOSMTiles.MapControl();
+            this.showPixelXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -452,7 +456,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.optionsToolStripMenuItem,
-            this.mapToolStripMenuItem});
+            this.mapToolStripMenuItem,
+            this.objectsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1615, 24);
@@ -467,10 +472,18 @@
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
             // 
+            // snapshotToolStripMenuItem
+            // 
+            this.snapshotToolStripMenuItem.Name = "snapshotToolStripMenuItem";
+            this.snapshotToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.snapshotToolStripMenuItem.Text = "Snapshot";
+            this.snapshotToolStripMenuItem.Click += new System.EventHandler(this.snapshotToolStripMenuItem_Click);
+            // 
             // mapToolStripMenuItem
             // 
             this.mapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showXYToolStripMenuItem,
+            this.showPixelXYToolStripMenuItem,
             this.showBorderToolStripMenuItem});
             this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
             this.mapToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
@@ -479,16 +492,31 @@
             // showXYToolStripMenuItem
             // 
             this.showXYToolStripMenuItem.Name = "showXYToolStripMenuItem";
-            this.showXYToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.showXYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.showXYToolStripMenuItem.Text = "Show XY";
             this.showXYToolStripMenuItem.Click += new System.EventHandler(this.showXYToolStripMenuItem_Click);
             // 
             // showBorderToolStripMenuItem
             // 
             this.showBorderToolStripMenuItem.Name = "showBorderToolStripMenuItem";
-            this.showBorderToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.showBorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.showBorderToolStripMenuItem.Text = "ShowBorder";
             this.showBorderToolStripMenuItem.Click += new System.EventHandler(this.showBorderToolStripMenuItem_Click);
+            // 
+            // objectsToolStripMenuItem
+            // 
+            this.objectsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addAirplainToolStripMenuItem});
+            this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
+            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.objectsToolStripMenuItem.Text = "Objects";
+            // 
+            // addAirplainToolStripMenuItem
+            // 
+            this.addAirplainToolStripMenuItem.Name = "addAirplainToolStripMenuItem";
+            this.addAirplainToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addAirplainToolStripMenuItem.Text = "Add Airplain";
+            this.addAirplainToolStripMenuItem.Click += new System.EventHandler(this.addAirplainToolStripMenuItem_Click);
             // 
             // lblMouseXY
             // 
@@ -526,13 +554,6 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // snapshotToolStripMenuItem
-            // 
-            this.snapshotToolStripMenuItem.Name = "snapshotToolStripMenuItem";
-            this.snapshotToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
-            this.snapshotToolStripMenuItem.Text = "Snapshot";
-            this.snapshotToolStripMenuItem.Click += new System.EventHandler(this.snapshotToolStripMenuItem_Click);
-            // 
             // mapControl1
             // 
             this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -543,7 +564,13 @@
             this.mapControl1.Name = "mapControl1";
             this.mapControl1.Size = new System.Drawing.Size(1369, 780);
             this.mapControl1.TabIndex = 4;
-            this.mapControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.mapControl1_DragEnter);
+            // 
+            // showPixelXYToolStripMenuItem
+            // 
+            this.showPixelXYToolStripMenuItem.Name = "showPixelXYToolStripMenuItem";
+            this.showPixelXYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showPixelXYToolStripMenuItem.Text = "Show Pixel XY";
+            this.showPixelXYToolStripMenuItem.Click += new System.EventHandler(this.showPixelXYToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -651,6 +678,9 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripMenuItem snapshotToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem objectsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addAirplainToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showPixelXYToolStripMenuItem;
     }
 }
 

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static DownloadOSMTiles.MouseHook;
 
 namespace DownloadOSMTiles
 {
@@ -15,6 +17,7 @@ namespace DownloadOSMTiles
         int m_x, m_y;
         int m_tileNumber = -1;
         bool m_drawTileNumber = false;
+        bool m_drawPixelXY = false;
         public MapPictureBox(int x, int y, int tileNumber)
         {
             
@@ -25,7 +28,13 @@ namespace DownloadOSMTiles
             m_x = x;
             m_y = y;
             m_tileNumber = tileNumber;
-        } 
+        }
+
+        public void DrawPixelXY(bool d)
+        {
+            m_drawPixelXY = d;
+            this.Refresh();
+        }
 
         public void DrawXY(bool d)
         {
@@ -55,21 +64,19 @@ namespace DownloadOSMTiles
         {
             return tileBlock;
         }
-
-        private void InitializeComponent()
-        {
-            ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
-            this.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
-            this.ResumeLayout(false);
-
-        }
-
+         
+        
         private void MapPictureBox_Paint(object sender, PaintEventArgs e)
         {
+  
             if (m_drawXY == true)
             {
                 e.Graphics.DrawString(tileBlock.x + "," + tileBlock.y, this.Font, Brushes.Red, 256 / 2, 256 / 2);
+            }
+
+            if (m_drawPixelXY == true)
+            {
+                e.Graphics.DrawString(tileBlock.pixelx + "," + tileBlock.pixely, this.Font, Brushes.Red, 256 / 2, 256 / 2);
             }
 
             if (m_drawTileNumber == true)
