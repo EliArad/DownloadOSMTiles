@@ -34,6 +34,7 @@ namespace DownloadOSMTiles
             mapControl1.LoadHistory("MyHistoryBlock.json");
             this.MouseEnter += Form1_MouseEnter;
             this.MouseLeave += Form1_MouseLeave;
+            this.AllowDrop = true;
         }
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
@@ -480,7 +481,8 @@ namespace DownloadOSMTiles
 
         private void button4_Click(object sender, EventArgs e)
         {
-            TileDB db = new TileDB("tiles_lat_lon_db.json");
+            string area = txtCreateName.Text;
+            TileDB db = new TileDB(m_baseDir + area + "\\tiles_lat_lon_db.json");
             db.Load(out tilesBlock);   
             for(int i = 0; i < tilesBlock.Count; i++)
             {

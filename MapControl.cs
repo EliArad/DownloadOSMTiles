@@ -69,7 +69,7 @@ namespace DownloadOSMTiles
             MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
             MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
             MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
-             
+            this.AllowDrop = true;
              
         } 
 
@@ -86,12 +86,11 @@ namespace DownloadOSMTiles
         Panel m_panel;
         PictureBox pictureBox1;
         List<PictureBox> m_allPB = new List<PictureBox>();
-       
+        
         public void AddBitmap()
         {
-            AllowDrop = true;
+             
             PictureBox p = new PictureBox();
-
             p.Location = new System.Drawing.Point(316, 258);
             p.Name = "pictureBox1";
             p.Size = new System.Drawing.Size(100, 50);
@@ -100,10 +99,42 @@ namespace DownloadOSMTiles
             p.ImageLocation = "images.jfif";
             p.SizeMode = PictureBoxSizeMode.StretchImage;
             Controls.Add(p);
-            p.BringToFront();
-           
+            p.BringToFront();           
             p.AllowDrop = true;
+            p.DragEnter += P_DragEnter;
+            p.MouseDown += P_MouseDown;
+            p.DragDrop += P_DragDrop;
+            p.DragLeave += P_DragLeave;
             m_allPB.Add(p);
+        }
+
+        private void P_DragLeave(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void P_DragDrop(object sender, DragEventArgs e)
+        {
+            m_allPB[0].Left = m_lastMousex;
+        }
+
+        private void P_MouseDown(object sender, MouseEventArgs e)
+        {
+            m_allPB[0].DoDragDrop(m_allPB[0].Image, DragDropEffects.Move);
+        }
+
+        private void P_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Bitmap) && (e.AllowedEffect & DragDropEffects.Move) != 0)
+            {
+                // Allow this.
+                e.Effect = DragDropEffects.Move;
+            }
+            else
+            {
+                // Don't allow any other drop.
+                e.Effect = DragDropEffects.None;
+            }
         }
 
         public void MoveBitmap()
