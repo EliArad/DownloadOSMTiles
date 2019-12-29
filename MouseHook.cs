@@ -19,6 +19,13 @@ namespace DownloadOSMTiles
         public static event EventXHandler MoveMouseAction = delegate { };
 
         static bool m_hooked = false;
+        public static bool Hooked
+        {
+            get
+            {
+                return m_hooked;
+            }
+        }
         public static void Start()
         {
             

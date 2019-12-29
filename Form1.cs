@@ -711,9 +711,46 @@ namespace DownloadOSMTiles
         {
             mapControl1.AddRowTilesOnTheLeft("israel", out string outMessage);
         }
-         
+
+        public void CallbackMsg(TileBlock tile)
+        {
+            if (mapControl1.ShowLatLon(tile.name, tile.zoom, tile.lat, tile.lon, 1, 1, out string outMessage) == false)
+            {
+                string[] s = outMessage.Split(',');
+                MessageBox.Show("Missing tiles: " + outMessage);
+                if (s[0] == "Missing tiles")
+                {
+                    DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                    if (d == DialogResult.Yes)
+                    {
+                        DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                        return;
+                    }
+                }
+            }
+            mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
+            mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
+
+            if (saveLocationForm != null)
+                saveLocationForm.Close();
+            saveLocationForm = null;
+
+        }
+        SaveLocationForm saveLocationForm;
         private void button2_Click(object sender, EventArgs e)
         {
+            SaveLocationControl.Callback p = new SaveLocationControl.Callback(CallbackMsg);
+
+
+            if (saveLocationForm == null)
+                saveLocationForm = new SaveLocationForm();
+            saveLocationForm.Load(mapControl1.HistoryBlocks, p);
+            saveLocationForm.ShowDialog();
+            return;
+
+
+
+
             if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text))
             {
                 TileBlock s1 = mapControl1.HistoryBlocks[txtLocationName.Text];

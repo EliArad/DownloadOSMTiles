@@ -60,6 +60,18 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MouseHook.cs" />
+    <Compile Include="SaveLocationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SaveLocationControl.Designer.cs">
+      <DependentUpon>SaveLocationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SaveLocationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SaveLocationForm.Designer.cs">
+      <DependentUpon>SaveLocationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TileDB.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -89,6 +101,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SaveLocationControl.resx">
+      <DependentUpon>SaveLocationControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SaveLocationForm.resx">
+      <DependentUpon>SaveLocationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

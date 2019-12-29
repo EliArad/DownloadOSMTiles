@@ -279,16 +279,18 @@ namespace DownloadOSMTiles
             Application.DoEvents();
             Thread.Sleep(0);
             Application.DoEvents();
-            while (lastCurrentPixelX == m_currentPixelX || lastCurrentPixelY == m_currentPixelY)
+            if (MouseHook.Hooked == true)
             {
-                Thread.Sleep(0);
-                Application.DoEvents();
-            }
-
-            for (int i = 0; i < m_allTiles.Count; i++)
-            {
-                m_allTiles[i].Left -= pixelX_Excact - m_currentPixelX;
-                m_allTiles[i].Top -= pixelY_Excact - m_currentPixelY;
+                while (lastCurrentPixelX == m_currentPixelX || lastCurrentPixelY == m_currentPixelY)
+                {
+                    Thread.Sleep(0);
+                    Application.DoEvents();
+                }
+                for (int i = 0; i < m_allTiles.Count; i++)
+                {
+                    m_allTiles[i].Left -= pixelX_Excact - m_currentPixelX;
+                    m_allTiles[i].Top -= pixelY_Excact - m_currentPixelY;
+                }
             }
              
             
