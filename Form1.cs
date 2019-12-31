@@ -111,14 +111,26 @@ namespace DownloadOSMTiles
        
         GeoCoordinate sCoord = null;
         GeoCoordinate eCoord = null;
+
+        List<double> m_latList = new List<double>();
+        List<double> m_lonList = new List<double>();
         void MapMsgCallackFunc(int code, string msg)
         {
             switch (code)
             {
+                case 9511:
+                {
+                    m_latList.Add(double.Parse(lblLat.Text));
+                    m_lonList.Add(double.Parse(lblLon.Text));
+                }
+                break;
                 case 883:
                 {
                     if (eCoord == null || sCoord == null)
+                    { 
+                        MessageBox.Show("Please mark points before calling calculate");
                         return;
+                    }                        
                     double distanceInMeters = sCoord.GetDistanceTo(eCoord);
                     MessageBox.Show("Distance In meters: " + distanceInMeters + Environment.NewLine +
                                     "Distance In Km: " + distanceInMeters / 1000.0 + Environment.NewLine);
@@ -821,10 +833,44 @@ namespace DownloadOSMTiles
 
         private void button8_Click(object sender, EventArgs e)
         {
+            if (eCoord == null || sCoord == null)
+            {
+                MessageBox.Show("Please mark points before calling calculate");
+                return;
+            }
             
             double distanceInMeters = sCoord.GetDistanceTo(eCoord);
             MessageBox.Show("Distance In meters: " + distanceInMeters + Environment.NewLine +
                             "Distance In Km: " + distanceInMeters /1000.0 + Environment.NewLine);
+        }
+
+        private void btnCalcLineDistance_Click(object sender, EventArgs e)
+        {
+            
+            GeoCoordinate sc = null;
+            GeoCoordinate ec = null;
+            double distanceInMeters = 0;
+            
+            for (int i = 0; i < m_latList.Count - 1; i+=1)
+            {
+                sc = new GeoCoordinate(m_latList[i], m_lonList[i]);
+                ec = new GeoCoordinate(m_latList[i+1], m_lonList[i+1]);
+                distanceInMeters+= sc.GetDistanceTo(ec);
+            }
+
+            MessageBox.Show("Line distance :" + distanceInMeters / 1000.0 + " Km");
+            m_latList.Clear();
+            m_lonList.Clear();
+            checkBox1.Checked = false;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                m_latList.Clear();
+                m_lonList.Clear();
+            }
         }
     }
 }

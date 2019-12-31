@@ -651,6 +651,8 @@ namespace DownloadOSMTiles
         {
             if (draw)
             {
+                pMapMsgCallack(9511, pt.x + "," + pt.y);
+
                 IntPtr hdc = GetWindowDC(this.Handle);
                 Graphics g = Graphics.FromHdc(hdc);
                 Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));

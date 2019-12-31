@@ -82,6 +82,8 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.btnCalcDistance = new System.Windows.Forms.Button();
+            this.btnCalcLineDistance = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -432,7 +434,7 @@
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button7.Location = new System.Drawing.Point(12, 720);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.Size = new System.Drawing.Size(56, 23);
             this.button7.TabIndex = 28;
             this.button7.Text = "Clear";
             this.button7.UseVisualStyleBackColor = true;
@@ -449,7 +451,7 @@
             "Circle",
             "Rectangle",
             "Triangle"});
-            this.cmbDrawShape.Location = new System.Drawing.Point(104, 720);
+            this.cmbDrawShape.Location = new System.Drawing.Point(74, 720);
             this.cmbDrawShape.Name = "cmbDrawShape";
             this.cmbDrawShape.Size = new System.Drawing.Size(79, 21);
             this.cmbDrawShape.TabIndex = 29;
@@ -584,6 +586,28 @@
             this.btnCalcDistance.UseVisualStyleBackColor = true;
             this.btnCalcDistance.Click += new System.EventHandler(this.button8_Click);
             // 
+            // btnCalcLineDistance
+            // 
+            this.btnCalcLineDistance.Location = new System.Drawing.Point(124, 409);
+            this.btnCalcLineDistance.Name = "btnCalcLineDistance";
+            this.btnCalcLineDistance.Size = new System.Drawing.Size(104, 23);
+            this.btnCalcLineDistance.TabIndex = 37;
+            this.btnCalcLineDistance.Text = "Calc Line Distance";
+            this.btnCalcLineDistance.UseVisualStyleBackColor = true;
+            this.btnCalcLineDistance.Click += new System.EventHandler(this.btnCalcLineDistance_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(162, 723);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(68, 17);
+            this.checkBox1.TabIndex = 38;
+            this.checkBox1.Text = "Distance";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // mapControl1
             // 
             this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -600,6 +624,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1615, 784);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.btnCalcLineDistance);
             this.Controls.Add(this.btnCalcDistance);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label14);
@@ -707,6 +733,8 @@
         private System.Windows.Forms.ToolStripMenuItem showPixelXYToolStripMenuItem;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnCalcDistance;
+        private System.Windows.Forms.Button btnCalcLineDistance;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
