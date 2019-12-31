@@ -1104,5 +1104,20 @@ namespace DownloadOSMTiles
         {
             pMapMsgCallack(521, "Save Location");
         }
+
+        private void markPointAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pMapMsgCallack(881, "Point A");
+        }
+
+        private void markPointBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pMapMsgCallack(882, "Point B");
+        }
+
+        private void calcDistanceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pMapMsgCallack(883, "Calc distance");
+        }
     }
 }

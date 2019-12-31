@@ -80,8 +80,9 @@
             this.txtLocationName = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.button1 = new System.Windows.Forms.Button();
+            this.btnCalcDistance = new System.Windows.Forms.Button();
+            this.mapControl1 = new DownloadOSMTiles.MapControl();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -563,6 +564,26 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(144, 95);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(59, 32);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "Home";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_2);
+            // 
+            // btnCalcDistance
+            // 
+            this.btnCalcDistance.Location = new System.Drawing.Point(124, 358);
+            this.btnCalcDistance.Name = "btnCalcDistance";
+            this.btnCalcDistance.Size = new System.Drawing.Size(97, 23);
+            this.btnCalcDistance.TabIndex = 36;
+            this.btnCalcDistance.Text = "Calc Distance";
+            this.btnCalcDistance.UseVisualStyleBackColor = true;
+            this.btnCalcDistance.Click += new System.EventHandler(this.button8_Click);
+            // 
             // mapControl1
             // 
             this.mapControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -574,21 +595,12 @@
             this.mapControl1.Size = new System.Drawing.Size(1369, 780);
             this.mapControl1.TabIndex = 4;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(144, 95);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(59, 32);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Home";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1615, 784);
+            this.Controls.Add(this.btnCalcDistance);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.txtLocationName);
@@ -694,6 +706,7 @@
         private System.Windows.Forms.ToolStripMenuItem addAirplainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showPixelXYToolStripMenuItem;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnCalcDistance;
     }
 }
 

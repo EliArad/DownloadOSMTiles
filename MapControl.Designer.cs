@@ -41,6 +41,9 @@
             this.fillColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.markPointAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.markPointBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calcDistanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,9 +52,12 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.noShapeToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.saveLocationToolStripMenuItem});
+            this.saveLocationToolStripMenuItem,
+            this.markPointAToolStripMenuItem,
+            this.markPointBToolStripMenuItem,
+            this.calcDistanceToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 142);
             // 
             // noShapeToolStripMenuItem
             // 
@@ -132,6 +138,27 @@
             this.saveLocationToolStripMenuItem.Text = "Save Location";
             this.saveLocationToolStripMenuItem.Click += new System.EventHandler(this.saveLocationToolStripMenuItem_Click);
             // 
+            // markPointAToolStripMenuItem
+            // 
+            this.markPointAToolStripMenuItem.Name = "markPointAToolStripMenuItem";
+            this.markPointAToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.markPointAToolStripMenuItem.Text = "Mark Point A";
+            this.markPointAToolStripMenuItem.Click += new System.EventHandler(this.markPointAToolStripMenuItem_Click);
+            // 
+            // markPointBToolStripMenuItem
+            // 
+            this.markPointBToolStripMenuItem.Name = "markPointBToolStripMenuItem";
+            this.markPointBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.markPointBToolStripMenuItem.Text = "Mark Point B";
+            this.markPointBToolStripMenuItem.Click += new System.EventHandler(this.markPointBToolStripMenuItem_Click);
+            // 
+            // calcDistanceToolStripMenuItem
+            // 
+            this.calcDistanceToolStripMenuItem.Name = "calcDistanceToolStripMenuItem";
+            this.calcDistanceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.calcDistanceToolStripMenuItem.Text = "Calc distance";
+            this.calcDistanceToolStripMenuItem.Click += new System.EventHandler(this.calcDistanceToolStripMenuItem_Click);
+            // 
             // MapControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -159,5 +186,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem fillColorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveLocationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem markPointAToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem markPointBToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem calcDistanceToolStripMenuItem;
     }
 }

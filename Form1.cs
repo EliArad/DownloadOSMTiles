@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -106,12 +107,33 @@ namespace DownloadOSMTiles
                 MessageBox.Show("Saved");
             }
         }
-         
+
        
+        GeoCoordinate sCoord = null;
+        GeoCoordinate eCoord = null;
         void MapMsgCallackFunc(int code, string msg)
         {
             switch (code)
             {
+                case 883:
+                {
+                    if (eCoord == null || sCoord == null)
+                        return;
+                    double distanceInMeters = sCoord.GetDistanceTo(eCoord);
+                    MessageBox.Show("Distance In meters: " + distanceInMeters + Environment.NewLine +
+                                    "Distance In Km: " + distanceInMeters / 1000.0 + Environment.NewLine);
+                }
+                break;
+                case 881:
+                {                     
+                    sCoord = new GeoCoordinate(double.Parse(lblLat.Text), double.Parse(lblLon.Text));
+                }
+                break;
+                case 882:
+                {
+                    eCoord = new GeoCoordinate(double.Parse(lblLat.Text), double.Parse(lblLon.Text));
+                }
+                break;
                 case 521:
                 {
                     SaveLocation();
@@ -795,6 +817,14 @@ namespace DownloadOSMTiles
         private void button1_Click_2(object sender, EventArgs e)
         {
             mapControl1.LoadLocation(txtCreateName.Text, "home", showPixelXYToolStripMenuItem.Checked, showBorderToolStripMenuItem.Checked, 3, false);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            
+            double distanceInMeters = sCoord.GetDistanceTo(eCoord);
+            MessageBox.Show("Distance In meters: " + distanceInMeters + Environment.NewLine +
+                            "Distance In Km: " + distanceInMeters /1000.0 + Environment.NewLine);
         }
     }
 }
