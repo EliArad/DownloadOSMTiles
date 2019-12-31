@@ -30,7 +30,7 @@ namespace DownloadOSMTiles
             MapMsgCallack p2 = new MapMsgCallack(MapMsgCallackFunc);
             mapControl1.SetCallback(p,p1,p2);
 
-            mapControl1.LoadControl();
+            mapControl1.LoadControl(m_baseDir);
             mapControl1.LoadHistory("MyHistoryBlock.json");
             this.MouseEnter += Form1_MouseEnter;
             this.MouseLeave += Form1_MouseLeave;
@@ -61,41 +61,49 @@ namespace DownloadOSMTiles
             }
             if (e.Control && e.KeyCode == Keys.S)
             {
-                if (txtLocationName.Text == string.Empty)
-                {
-                    MessageBox.Show("Please specify location name to save");
-                    return;
-                }                
-                if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text) == false)
-                {
-                    TileBlock s = new TileBlock();
+                SaveLocation();
+            }
+        }
 
-                    s.x = int.Parse(lblTileX.Text);
-                    s.y = int.Parse(lblTileY.Text);
-                    s.pixelx = int.Parse(lblPixelX.Text);
-                    s.pixely = int.Parse(lblPixelY.Text);
+        void SaveLocation()
+        {
+            if (txtLocationName.Text == string.Empty)
+            {
+                MessageBox.Show("Please specify location name to save");
+                return;
+            }
+            if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text) == false)
+            {
+                TileBlock s = new TileBlock();
 
-                    s.lat = double.Parse(lblLat.Text);
-                    s.lon = double.Parse(lblLon.Text);
-                    s.zoom = int.Parse(cmbZoom.Text);
-                    s.name = txtCreateName.Text;
-                    mapControl1.HistoryBlocks.Add(txtLocationName.Text, s);
-                    mapControl1.SaveHistory("MyHistoryBlock.json");
-                }
-                else
-                {
-                    TileBlock s = mapControl1.HistoryBlocks[txtLocationName.Text];
-                    s.x = int.Parse(lblTileX.Text);
-                    s.y = int.Parse(lblTileY.Text);
-                    s.pixelx = int.Parse(lblPixelX.Text);
-                    s.pixely = int.Parse(lblPixelY.Text);
+                s.x = int.Parse(lblTileX.Text);
+                s.y = int.Parse(lblTileY.Text);
+                s.pixelx = int.Parse(lblPixelX.Text);
+                s.pixely = int.Parse(lblPixelY.Text);
 
-                    s.lat = double.Parse(lblLat.Text);
-                    s.lon = double.Parse(lblLon.Text);
-                    s.zoom = int.Parse(cmbZoom.Text);
-                    s.name = txtCreateName.Text;
-                    mapControl1.SaveHistory("MyHistoryBlock.json");
-                }
+                s.lat = double.Parse(lblLat.Text);
+                s.lon = double.Parse(lblLon.Text);
+                s.zoom = int.Parse(cmbZoom.Text);
+                s.name = txtCreateName.Text;
+                mapControl1.HistoryBlocks.Add(txtLocationName.Text, s);
+                mapControl1.SaveHistory("MyHistoryBlock.json");
+                MessageBox.Show("Saved");
+            }
+            else
+            {
+                TileBlock s = mapControl1.HistoryBlocks[txtLocationName.Text];
+                s.x = int.Parse(lblTileX.Text);
+                s.y = int.Parse(lblTileY.Text);
+                s.pixelx = int.Parse(lblPixelX.Text);
+                s.pixely = int.Parse(lblPixelY.Text);
+
+                s.lat = double.Parse(lblLat.Text);
+                s.lon = double.Parse(lblLon.Text);
+                s.zoom = int.Parse(cmbZoom.Text);
+                s.name = txtCreateName.Text;
+                mapControl1.HistoryBlocks[txtLocationName.Text] = s;
+                mapControl1.SaveHistory("MyHistoryBlock.json");
+                MessageBox.Show("Saved");
             }
         }
          
@@ -104,6 +112,11 @@ namespace DownloadOSMTiles
         {
             switch (code)
             {
+                case 521:
+                {
+                    SaveLocation();
+                }
+                break;
                 case 551:
                 {
                     lblMouseXY.Text = msg;
@@ -380,6 +393,7 @@ namespace DownloadOSMTiles
  
         public async void DownloadTilesFromList(List<Tile> tiles, Action<bool, string, int, int> cb)
         {
+            mapControl1.Stop();
             Directory.CreateDirectory(m_baseDir + tiles[0].name);
             HttpClient client = new HttpClient();
 
@@ -747,30 +761,8 @@ namespace DownloadOSMTiles
             saveLocationForm.Load(mapControl1.HistoryBlocks, p);
             saveLocationForm.ShowDialog();
             return;
-
-
-
-
-            if (mapControl1.HistoryBlocks.ContainsKey(txtLocationName.Text))
-            {
-                TileBlock s1 = mapControl1.HistoryBlocks[txtLocationName.Text];
-                if (mapControl1.ShowLatLon(s1.name, s1.zoom, s1.lat, s1.lon, 1, 1, out string outMessage) == false)
-                {
-                    string[] s = outMessage.Split(',');
-                    MessageBox.Show("Missing tiles: " + outMessage);
-                    if (s[0] == "Missing tiles")
-                    {
-                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
-                        if (d == DialogResult.Yes)
-                        {
-                            DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
-                            return;
-                        }
-                    }
-                }
-                mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
-                mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
-            }
+             
+            
         }
 
         private void snapshotToolStripMenuItem_Click(object sender, EventArgs e)
@@ -798,6 +790,11 @@ namespace DownloadOSMTiles
         {
             showPixelXYToolStripMenuItem.Checked = !showPixelXYToolStripMenuItem.Checked;
             mapControl1.ShowPixelXY(showPixelXYToolStripMenuItem.Checked);
+        }
+
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            mapControl1.LoadLocation(txtCreateName.Text, "home", showPixelXYToolStripMenuItem.Checked, showBorderToolStripMenuItem.Checked, 3, false);
         }
     }
 }

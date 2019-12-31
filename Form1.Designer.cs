@@ -72,6 +72,7 @@
             this.snapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showPixelXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showBorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAirplainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,7 +81,7 @@
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.mapControl1 = new DownloadOSMTiles.MapControl();
-            this.showPixelXYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -136,6 +137,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cmbZoom2);
             this.groupBox1.Controls.Add(this.btnGo);
@@ -492,14 +494,21 @@
             // showXYToolStripMenuItem
             // 
             this.showXYToolStripMenuItem.Name = "showXYToolStripMenuItem";
-            this.showXYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showXYToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.showXYToolStripMenuItem.Text = "Show XY";
             this.showXYToolStripMenuItem.Click += new System.EventHandler(this.showXYToolStripMenuItem_Click);
+            // 
+            // showPixelXYToolStripMenuItem
+            // 
+            this.showPixelXYToolStripMenuItem.Name = "showPixelXYToolStripMenuItem";
+            this.showPixelXYToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.showPixelXYToolStripMenuItem.Text = "Show Pixel XY";
+            this.showPixelXYToolStripMenuItem.Click += new System.EventHandler(this.showPixelXYToolStripMenuItem_Click);
             // 
             // showBorderToolStripMenuItem
             // 
             this.showBorderToolStripMenuItem.Name = "showBorderToolStripMenuItem";
-            this.showBorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showBorderToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.showBorderToolStripMenuItem.Text = "ShowBorder";
             this.showBorderToolStripMenuItem.Click += new System.EventHandler(this.showBorderToolStripMenuItem_Click);
             // 
@@ -514,7 +523,7 @@
             // addAirplainToolStripMenuItem
             // 
             this.addAirplainToolStripMenuItem.Name = "addAirplainToolStripMenuItem";
-            this.addAirplainToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addAirplainToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.addAirplainToolStripMenuItem.Text = "Add Airplain";
             this.addAirplainToolStripMenuItem.Click += new System.EventHandler(this.addAirplainToolStripMenuItem_Click);
             // 
@@ -565,12 +574,15 @@
             this.mapControl1.Size = new System.Drawing.Size(1369, 780);
             this.mapControl1.TabIndex = 4;
             // 
-            // showPixelXYToolStripMenuItem
+            // button1
             // 
-            this.showPixelXYToolStripMenuItem.Name = "showPixelXYToolStripMenuItem";
-            this.showPixelXYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.showPixelXYToolStripMenuItem.Text = "Show Pixel XY";
-            this.showPixelXYToolStripMenuItem.Click += new System.EventHandler(this.showPixelXYToolStripMenuItem_Click);
+            this.button1.Location = new System.Drawing.Point(144, 95);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(59, 32);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "Home";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
             // Form1
             // 
@@ -681,6 +693,7 @@
         private System.Windows.Forms.ToolStripMenuItem objectsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addAirplainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showPixelXYToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
     }
 }
 

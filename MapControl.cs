@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Net.Http;
 
 namespace DownloadOSMTiles
 {
@@ -29,7 +30,7 @@ namespace DownloadOSMTiles
             RECT,
             TRIANGLE
         }
-
+        private readonly string[] _serverEndpoints = { "a", "b", "c" };
         const int RDW_INVALIDATE = 0x0001;
         const int RDW_ALLCHILDREN = 0x0080;
         const int RDW_UPDATENOW = 0x0100;
@@ -49,12 +50,13 @@ namespace DownloadOSMTiles
 
         public delegate void MapMsgCallack(int code, string msg);
         public delegate void MapControlZoomCallback(TileBlock t, int mapX , int mapY, bool zoomIn);
-
+        bool m_stopDownload = false;
         int m_lastXTile = 0;
         int m_lastYTile = 0;
         DRAW_SHAPE m_drawShape = DRAW_SHAPE.NONE;
         List<TileBlock> tilesBlock = new List<TileBlock>();
         List<MapPictureBox> m_allTiles = new List<MapPictureBox>();
+        string m_baseDir;
         public MapControl()
         {
             InitializeComponent();
@@ -62,10 +64,11 @@ namespace DownloadOSMTiles
             this.DoubleBuffered = true;
  
         }
-	    public void LoadControl()
-	    { 
+	    public void LoadControl(string baseDir)
+	    {
+            m_baseDir = baseDir;
 
-           
+
             MouseHook.LeftMouseDownAction += new EventX2Handler(LeftMouseDownEvent);
             MouseHook.LeftMouseUpAction += new EventX2Handler(LeftMouseUpEvent);
             MouseHook.MoveMouseAction += new EventXHandler(MoveMouseEvent);
@@ -221,7 +224,14 @@ namespace DownloadOSMTiles
         string OSM_PATH = @"C:\OSMTiles\";
          
 
-        public bool ShowLatLon(string name, int zoom, double lat, double lon, int mapX, int mapY, out string outMessage)
+        public bool ShowLatLon(string name, 
+                               int zoom, 
+                               double lat, 
+                               double lon, 
+                               int mapX, 
+                               int mapY, 
+                               out string outMessage,
+                               bool forceZoomming = true)
         {
             int pixelX_Excact;
             int pixelY_Excact;
@@ -274,13 +284,12 @@ namespace DownloadOSMTiles
                 if (AddMapTile(name, tilex - mapX + i, tiley, zoom, i, mapY, out outMessage) == false)
                     return false;
             }
-
-
-            Application.DoEvents();
-            Thread.Sleep(0);
-            Application.DoEvents();
-            if (MouseHook.Hooked == true)
+            
+            if (forceZoomming && MouseHook.Hooked == true)
             {
+                Application.DoEvents();
+                Thread.Sleep(0);
+                Application.DoEvents();
                 while (lastCurrentPixelX == m_currentPixelX || lastCurrentPixelY == m_currentPixelY)
                 {
                     Thread.Sleep(0);
@@ -943,10 +952,118 @@ namespace DownloadOSMTiles
             if (lineToolStripMenuItem.Checked)
                 m_drawShape = DRAW_SHAPE.LINE;
         }
+        public async void DownloadTilesFromList(List<Tile> tiles, Action<bool, string, int, int> cb)
+        {
+            Directory.CreateDirectory(m_baseDir + tiles[0].name);
+            HttpClient client = new HttpClient();
 
+            m_stopDownload = false;
+            var random = new Random();
+
+            int countMissing = 0;
+            int countDownload = 0;
+            foreach (Tile tile in tiles)
+            {
+                if (m_stopDownload == true)
+                {
+                    m_stopDownload = false;
+                    return;
+                }
+                if (Directory.Exists(m_baseDir + tile.name + "\\" + tile.zoom) == false)
+                {
+                    Directory.CreateDirectory(m_baseDir + tile.name + "\\" + tile.zoom);
+                }
+
+                try
+                {
+                    string fileName = m_baseDir + tile.name + "\\_" + tile.zoom + "_" + tile.x + "_" + tile.y + "_" + tile.pixelx + "_" + tile.pixely + "_" + ".png";
+                    if (File.Exists(fileName) == false)
+                    {
+                        var url = $"http://{_serverEndpoints[random.Next(0, 2)]}.tile.openstreetmap.org/{tile.zoom}/{tile.x}/{tile.y}.png";
+                        var data = await client.GetByteArrayAsync(url);
+                        File.WriteAllBytes(m_baseDir + tile.name + "\\" + tile.zoom + "\\" + Path.GetFileName(fileName), data);
+                        Thread.Sleep(2000);
+                        countDownload++;
+                        string s = string.Format("{0}:{1} [ {2},{3},{4} ]", countDownload, tiles.Count, tile.x, tile.y, tile.zoom);
+                        Console.WriteLine(s);
+                        //label13.Text = s;
+                    }
+                    else
+                    {
+                        countDownload++;
+                        string s = string.Format("{0}:{1}", countDownload, tiles.Count);
+                        Console.WriteLine(s);
+                        //label13.Text = s;
+                    }
+                }
+                catch (Exception err)
+                {
+                    countMissing++;
+                }
+
+            }
+            if (cb != null)
+                cb(true, "finished", countMissing, countDownload);
+        }
         private void noneToolStripMenuItem_Click(object sender, EventArgs e)
         {
             m_drawShape = DRAW_SHAPE.NONE;
+        }
+        void DownloadFromXY(string name, int startTilex, int startTiley, int zoom, int downloadCount)
+        {
+
+            List<Tile> tiles = new List<Tile>();
+            int orig_size = downloadCount;
+            int size = 15;
+            // IN ZOOM , the X and Y are plus 256 and the pixel is multiplx 256
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    Tile t3 = new Tile
+                    {
+                        x_size = 1,
+                        y_size = 1,
+                        name = name,
+                        zoom = zoom
+                    };
+                    t3.x = startTilex + j;
+                    t3.y = startTiley + i;
+                    t3.pixelx = t3.x * 256;
+                    t3.pixely = t3.y * 256;
+                    tiles.Add(t3);
+                }
+
+            }
+
+            DownloadTilesFromList(tiles, (status, msg, countMissing, countDownload) =>
+            {
+                MessageBox.Show("Finished download: " + countDownload);
+            });
+        }
+        public void LoadLocation(string name, string location, bool showXy , bool showBorder, int downloadCount, bool forceZomming)
+        {
+            if (HistoryBlocks.ContainsKey(location))
+            {
+                TileBlock s1 = HistoryBlocks[location];
+                if (ShowLatLon(s1.name, s1.zoom, s1.lat, s1.lon, 1, 1, out string outMessage, forceZomming) == false)
+                {
+                    string[] s = outMessage.Split(',');
+                    MessageBox.Show("Missing tiles: " + outMessage);
+                    if (s[0] == "Missing tiles")
+                    {
+                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                        if (d == DialogResult.Yes)
+                        {
+                            DownloadFromXY(name, int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]), downloadCount);
+                            return;
+                        }
+                    }
+                }
+                ShowXY(showXy);
+                ShowBorder(showBorder);
+            }
         }
 
         private void circleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -983,5 +1100,9 @@ namespace DownloadOSMTiles
           System.Int32 dwRop  // raster operation code
           );
 
+        private void saveLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pMapMsgCallack(521, "Save Location");
+        }
     }
 }

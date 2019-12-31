@@ -19,7 +19,8 @@ namespace DownloadOSMTiles
         }
         public void Load(Dictionary<string, TileBlock> HistoryBlocks, SaveLocationControl.Callback p)
         {
-           
+            panel1.Controls.Clear();
+            m_index = 0;
             foreach (KeyValuePair <string, TileBlock> hb in HistoryBlocks)
             {
                 SaveLocationControl s = AddLocation();
