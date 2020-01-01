@@ -17,7 +17,7 @@ namespace DownloadOSMTiles
     {
         string m_baseDir = "d:\\OSMTiles\\";
         bool m_initdone = false;
- 
+        string m_historyFileName = "MyHistoryBlock.json";
         public Form1()
         {
             InitializeComponent();
@@ -32,10 +32,17 @@ namespace DownloadOSMTiles
             mapControl1.SetCallback(p,p1,p2);
 
             mapControl1.LoadControl(m_baseDir);
-            mapControl1.LoadHistory("MyHistoryBlock.json");
+            mapControl1.LoadHistory(m_historyFileName);
             this.MouseEnter += Form1_MouseEnter;
             this.MouseLeave += Form1_MouseLeave;
             this.AllowDrop = true;
+
+            if (AppSettings.Instance.Load("DownloadOSMTiles.json") == true)
+            {
+                mapControl1.LineColor = AppSettings.Instance.Config.lineColor;
+                linkLabel1.LinkColor = AppSettings.Instance.Config.lineColor;
+            }
+
         }
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
@@ -87,7 +94,7 @@ namespace DownloadOSMTiles
                 s.zoom = int.Parse(cmbZoom.Text);
                 s.name = txtCreateName.Text;
                 mapControl1.HistoryBlocks.Add(txtLocationName.Text, s);
-                mapControl1.SaveHistory("MyHistoryBlock.json");
+                mapControl1.SaveHistory(m_historyFileName);
                 MessageBox.Show("Saved");
             }
             else
@@ -103,7 +110,7 @@ namespace DownloadOSMTiles
                 s.zoom = int.Parse(cmbZoom.Text);
                 s.name = txtCreateName.Text;
                 mapControl1.HistoryBlocks[txtLocationName.Text] = s;
-                mapControl1.SaveHistory("MyHistoryBlock.json");
+                mapControl1.SaveHistory(m_historyFileName);
                 MessageBox.Show("Saved");
             }
         }
@@ -573,12 +580,12 @@ namespace DownloadOSMTiles
             int zoom = int.Parse(cmbZoom.Text);
             List<Tile> tiles = new List<Tile>();
             int orig_size = int.Parse(txtDownloadCount.Text);
-            int size = orig_size;
-            int sizeNext = 2;
+            int size = 7;
+            
 
             // IN ZOOM , the X and Y are plus 256 and the pixel is multiplx 256
 
-            for (int z = zoom; z < 18; z++)
+            for (int z = zoom; z <= 18; z++)
             {
                 for (int i = 0; i < size; i++)
                 {
@@ -600,9 +607,6 @@ namespace DownloadOSMTiles
                 }
                 startTilex = startTilex * 2;
                 startTiley = startTiley * 2;
-                size = orig_size * sizeNext;
-                sizeNext += 1;
-                
             }
 
             DownloadTilesFromList(tiles, (status, msg, countMissing, countDownload) =>
@@ -687,7 +691,7 @@ namespace DownloadOSMTiles
             
             List<Tile> tiles = new List<Tile>();
             int orig_size = int.Parse(txtDownloadCount.Text);
-            int size = 15;
+            int size = 8;
             // IN ZOOM , the X and Y are plus 256 and the pixel is multiplx 256
 
             for (int i = 0; i < size; i++)
@@ -731,6 +735,10 @@ namespace DownloadOSMTiles
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             MouseHook.Stop();
+            AppSettings.Instance.Config.lineColor = mapControl1.LineColor;
+            AppSettings.Instance.Save();
+
+            mapControl1.SaveHistory(m_historyFileName);
         }
 
         private void cmbDrawShape_SelectedIndexChanged(object sender, EventArgs e)
@@ -760,43 +768,66 @@ namespace DownloadOSMTiles
             mapControl1.AddRowTilesOnTheLeft("israel", out string outMessage);
         }
 
-        public void CallbackMsg(TileBlock tile)
+        public void CallbackMsg(int code, int index, string name, TileBlock tile)
         {
-            if (mapControl1.ShowLatLon(tile.name, tile.zoom, tile.lat, tile.lon, 1, 1, out string outMessage) == false)
+            
+            if (code == 0)
             {
-                string[] s = outMessage.Split(',');
-                MessageBox.Show("Missing tiles: " + outMessage);
-                if (s[0] == "Missing tiles")
+                int zoom = saveLocationForm.WithZoom() == false ? int.Parse(cmbZoom.Text) : tile.zoom;
+                if (mapControl1.ShowLatLon(tile.name, zoom, tile.lat, tile.lon, 1, 1, out string outMessage) == false)
                 {
-                    DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
-                    if (d == DialogResult.Yes)
+                    string[] s = outMessage.Split(',');
+                    MessageBox.Show("Missing tiles: " + outMessage);
+                    if (s[0] == "Missing tiles")
                     {
-                        DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
-                        return;
+                        DialogResult d = MessageBox.Show("Do you want to download missing tiles?", "ELI OSM Control", MessageBoxButtons.YesNo);
+                        if (d == DialogResult.Yes)
+                        {
+                            DownloadFromXY(int.Parse(s[1]), int.Parse(s[2]), int.Parse(s[3]));
+                            return;
+                        }
                     }
                 }
+                mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
+                mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
+
+                if (saveLocationForm != null)
+                    mapControl1.SetHistory(saveLocationForm.GetHistory());
+
+                if (saveLocationForm != null)
+                {
+                    AppSettings.Instance.Config.LoadWithZoom = saveLocationForm.WithZoom();
+                    saveLocationForm.Close();
+                }
+                saveLocationForm = null;
+
             }
-            mapControl1.ShowXY(showXYToolStripMenuItem.Checked);
-            mapControl1.ShowBorder(showBorderToolStripMenuItem.Checked);
+            if (code == 1)
+            {
+                saveLocationForm.DeleteEntry(index, name);
 
-            if (saveLocationForm != null)
-                saveLocationForm.Close();
-            saveLocationForm = null;
-
+            }
         }
+       
         SaveLocationForm saveLocationForm;
         private void button2_Click(object sender, EventArgs e)
         {
             SaveLocationControl.Callback p = new SaveLocationControl.Callback(CallbackMsg);
 
 
-            if (saveLocationForm == null)
-                saveLocationForm = new SaveLocationForm();
-            saveLocationForm.Load(mapControl1.HistoryBlocks, p);
+            if (saveLocationForm != null)
+            {
+                AppSettings.Instance.Config.LoadWithZoom = saveLocationForm.WithZoom();
+                saveLocationForm.Close();
+                saveLocationForm = null;            
+            }
+            saveLocationForm = new SaveLocationForm(m_historyFileName, AppSettings.Instance.Config.LoadWithZoom);
+            saveLocationForm.LoadHistory(mapControl1.HistoryBlocks, p);
             saveLocationForm.ShowDialog();
+            if (saveLocationForm != null)
+                mapControl1.SetHistory(saveLocationForm.GetHistory());
             return;
-             
-            
+           
         }
 
         private void snapshotToolStripMenuItem_Click(object sender, EventArgs e)
@@ -870,6 +901,91 @@ namespace DownloadOSMTiles
             {
                 m_latList.Clear();
                 m_lonList.Clear();
+            }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ColorDialog colorDlg = new ColorDialog();
+            colorDlg.AllowFullOpen = true;
+            colorDlg.AnyColor = true;
+            colorDlg.SolidColorOnly = false;
+            colorDlg.Color = linkLabel1.LinkColor;
+
+            if (colorDlg.ShowDialog() == DialogResult.OK)
+            {
+                linkLabel1.LinkColor = colorDlg.Color;
+                mapControl1.LineColor = linkLabel1.LinkColor;
+            }
+        }
+
+        string GetFileName()
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            {
+                 
+                Title = "Import Location CSV Files",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "csv",
+                Filter = "CSV files (*.CSV)|*.csv",
+                FilterIndex = 2,
+                RestoreDirectory = true,
+                ReadOnlyChecked = true,
+                ShowReadOnly = false
+            };
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                return openFileDialog1.FileName;
+            }
+            return string.Empty;
+        }
+        private void importLocationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string fileName = GetFileName();
+            if (fileName == string.Empty)
+                return;
+
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                string line;
+                int count = 0;
+                     
+                while (true)
+                {
+                    line = sr.ReadLine();
+                    try
+                    {
+                        if (line == null)
+                            break;
+                        if (line == string.Empty)
+                            continue;
+                        string[] s = line.Split(',');
+                        for (int i = 0; i < s.Length; i++)
+                        {
+                            s[i] = s[i].Trim('\t');
+                        }
+                        TileBlock t = new TileBlock
+                        {
+                            lat = double.Parse(s[1]),
+                            lon = double.Parse(s[2]),
+                            name = txtCreateName.Text,
+                            zoom = 9
+                        };
+                        if (mapControl1.AddHistoryBlock(s[0], t) == true)
+                        {
+                            count++;
+                        }
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show(err.Message + Environment.NewLine + line);
+                    }
+                }
+                MessageBox.Show("Number of Places imported are: " + count);
             }
         }
     }

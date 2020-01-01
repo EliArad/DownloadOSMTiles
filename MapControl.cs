@@ -529,6 +529,7 @@ namespace DownloadOSMTiles
             {
                 m_allTiles[i].Left -= INC_SIZE;
             }
+            Application.DoEvents();
         }
         public void MoveRight()
         {
@@ -536,6 +537,7 @@ namespace DownloadOSMTiles
             {
                 m_allTiles[i].Left += INC_SIZE;
             }
+            Application.DoEvents();
         }
         public void MoveDown()
         {
@@ -543,6 +545,7 @@ namespace DownloadOSMTiles
             {
                 m_allTiles[i].Top += INC_SIZE;
             }
+            Application.DoEvents();
         }
         public void MoveUp()
         {
@@ -550,6 +553,7 @@ namespace DownloadOSMTiles
             {
                 m_allTiles[i].Top -= INC_SIZE;
             }
+            Application.DoEvents();
         }
         public void SetCallback(MapControlCallback p, MapControlZoomCallback p1, MapMsgCallack p2)
         {
@@ -647,6 +651,18 @@ namespace DownloadOSMTiles
 
 
         }
+        Color m_lineColor;
+        public Color LineColor
+        {
+            set
+            {
+                m_lineColor = value;
+            }
+            get
+            {
+                return m_lineColor;
+            }
+        }
         public void DrawLine(POINT pt, bool draw)
         {
             if (draw)
@@ -655,7 +671,7 @@ namespace DownloadOSMTiles
 
                 IntPtr hdc = GetWindowDC(this.Handle);
                 Graphics g = Graphics.FromHdc(hdc);
-                Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0));
+                Pen pen = new Pen(m_lineColor);
                 g.DrawLine(pen, m_lastDrawLinePoint.x - this.Left,
                                 m_lastDrawLinePoint.y - this.Top - 20,
                                 pt.x - this.Left, pt.y - this.Top - 20);
@@ -841,6 +857,19 @@ namespace DownloadOSMTiles
 
 
         public Dictionary<string, TileBlock> HistoryBlocks;
+        public bool AddHistoryBlock(string name, TileBlock tile)
+        {
+            if (HistoryBlocks.ContainsKey(name) == false)
+            {
+                HistoryBlocks.Add(name, tile);
+                return true;
+            }
+            return false;
+        }
+        public void SetHistory(Dictionary<string, TileBlock>  h)
+        {
+            HistoryBlocks = h;
+        }
         
         public string SaveHistory(string fileName)
         {

@@ -35,6 +35,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtCreateLon = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.cmbZoom2 = new System.Windows.Forms.ComboBox();
             this.btnGo = new System.Windows.Forms.Button();
@@ -80,11 +81,12 @@
             this.txtLocationName = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnCalcDistance = new System.Windows.Forms.Button();
             this.btnCalcLineDistance = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.mapControl1 = new DownloadOSMTiles.MapControl();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.importLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -114,7 +116,7 @@
             this.cmbZoom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbZoom.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbZoom.FormattingEnabled = true;
-            this.cmbZoom.Location = new System.Drawing.Point(67, 754);
+            this.cmbZoom.Location = new System.Drawing.Point(67, 810);
             this.cmbZoom.Name = "cmbZoom";
             this.cmbZoom.Size = new System.Drawing.Size(56, 21);
             this.cmbZoom.TabIndex = 5;
@@ -124,7 +126,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 757);
+            this.label1.Location = new System.Drawing.Point(11, 813);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 6;
@@ -155,6 +157,16 @@
             this.groupBox1.Size = new System.Drawing.Size(210, 163);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(144, 95);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(59, 32);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "Home";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_2);
             // 
             // label5
             // 
@@ -431,7 +443,7 @@
             // button7
             // 
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button7.Location = new System.Drawing.Point(12, 720);
+            this.button7.Location = new System.Drawing.Point(12, 776);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(56, 23);
             this.button7.TabIndex = 28;
@@ -450,7 +462,7 @@
             "Circle",
             "Rectangle",
             "Triangle"});
-            this.cmbDrawShape.Location = new System.Drawing.Point(74, 720);
+            this.cmbDrawShape.Location = new System.Drawing.Point(74, 776);
             this.cmbDrawShape.Name = "cmbDrawShape";
             this.cmbDrawShape.Size = new System.Drawing.Size(79, 21);
             this.cmbDrawShape.TabIndex = 29;
@@ -471,7 +483,8 @@
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.snapshotToolStripMenuItem});
+            this.snapshotToolStripMenuItem,
+            this.importLocationsToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -533,7 +546,7 @@
             // 
             this.lblMouseXY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMouseXY.AutoSize = true;
-            this.lblMouseXY.Location = new System.Drawing.Point(170, 762);
+            this.lblMouseXY.Location = new System.Drawing.Point(170, 818);
             this.lblMouseXY.Name = "lblMouseXY";
             this.lblMouseXY.Size = new System.Drawing.Size(13, 13);
             this.lblMouseXY.TabIndex = 31;
@@ -565,19 +578,9 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(144, 95);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(59, 32);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Home";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
-            // 
             // btnCalcDistance
             // 
-            this.btnCalcDistance.Location = new System.Drawing.Point(124, 358);
+            this.btnCalcDistance.Location = new System.Drawing.Point(15, 714);
             this.btnCalcDistance.Name = "btnCalcDistance";
             this.btnCalcDistance.Size = new System.Drawing.Size(97, 23);
             this.btnCalcDistance.TabIndex = 36;
@@ -587,7 +590,7 @@
             // 
             // btnCalcLineDistance
             // 
-            this.btnCalcLineDistance.Location = new System.Drawing.Point(124, 409);
+            this.btnCalcLineDistance.Location = new System.Drawing.Point(117, 714);
             this.btnCalcLineDistance.Name = "btnCalcLineDistance";
             this.btnCalcLineDistance.Size = new System.Drawing.Size(104, 23);
             this.btnCalcLineDistance.TabIndex = 37;
@@ -599,7 +602,7 @@
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(162, 723);
+            this.checkBox1.Location = new System.Drawing.Point(162, 779);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(68, 17);
             this.checkBox1.TabIndex = 38;
@@ -613,16 +616,38 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mapControl1.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.mapControl1.LineColor = System.Drawing.Color.Empty;
             this.mapControl1.Location = new System.Drawing.Point(234, 3);
             this.mapControl1.Name = "mapControl1";
-            this.mapControl1.Size = new System.Drawing.Size(1369, 780);
+            this.mapControl1.Size = new System.Drawing.Size(1369, 836);
             this.mapControl1.TabIndex = 4;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.LinkColor = System.Drawing.Color.SaddleBrown;
+            this.linkLabel1.Location = new System.Drawing.Point(73, 757);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(31, 13);
+            this.linkLabel1.TabIndex = 39;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Color";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // importLocationsToolStripMenuItem
+            // 
+            this.importLocationsToolStripMenuItem.Name = "importLocationsToolStripMenuItem";
+            this.importLocationsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importLocationsToolStripMenuItem.Text = "Import Locations";
+            this.importLocationsToolStripMenuItem.Click += new System.EventHandler(this.importLocationsToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1615, 784);
+            this.ClientSize = new System.Drawing.Size(1615, 840);
+            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.btnCalcLineDistance);
             this.Controls.Add(this.btnCalcDistance);
@@ -734,6 +759,8 @@
         private System.Windows.Forms.Button btnCalcDistance;
         private System.Windows.Forms.Button btnCalcLineDistance;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.ToolStripMenuItem importLocationsToolStripMenuItem;
     }
 }
 
